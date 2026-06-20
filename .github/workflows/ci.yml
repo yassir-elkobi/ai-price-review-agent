@@ -53,3 +53,24 @@ jobs:
           curl -sf http://localhost:7860/health | grep -q '"status":"ok"'
           curl -sf http://localhost:7860/scenarios | grep -q '"count"'
           docker stop pva
+
+  deploy:
+    name: Deploy to Hugging Face Space
+    runs-on: ubuntu-latest
+    needs: docker
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "GitHub Actions"
+          remote="https://yassir-elkobi:${HF_TOKEN}@huggingface.co/spaces/yassir-elkobi/ai-price-review-agent"
+          git remote add space "$remote" 2>/dev/null || git remote set-url space "$remote"
+          git push space HEAD:main --force
+

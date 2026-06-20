@@ -104,15 +104,15 @@ class TestGetValidationRules:
 
 
 class TestGetMarketContext:
-    def test_bond_returns_no_events(self):
+    def test_bond_returns_no_desk_events(self):
         from price_review.tools.registry import get_market_context
         result = get_market_context.invoke({"instrument_id": "XS1234567890"})
-        assert "No market events" in result
+        assert "No market events on record" in result
 
-    def test_equity_without_key_returns_no_events(self):
+    def test_tsla_returns_earnings_fixture(self):
         from price_review.tools.registry import get_market_context
-        result = get_market_context.invoke({"instrument_id": "AAPL.OQ"})
-        assert "No market events" in result
+        result = get_market_context.invoke({"instrument_id": "TSLA.OQ"})
+        assert "earnings" in result.lower()
 
 
 class TestEscalateToHuman:

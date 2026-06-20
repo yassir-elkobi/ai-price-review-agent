@@ -74,7 +74,8 @@ def health():
         "provider": "gemini",
         "model": settings.llm_model,
         "has_key": settings.has_llm_key,
-        "has_finnhub_key": settings.has_finnhub_key,
+        "market_context": "desk_demo_fixtures",
+        "optional_finnhub_enabled": settings.optional_finnhub_enabled,
     }
 
 

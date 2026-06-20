@@ -1,4 +1,5 @@
 from functools import lru_cache
+
 from pydantic import AliasChoices, Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -18,9 +19,9 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("GOOGLE_API_KEY", "GEMINI_API_KEY"),
     )
     llm_model: str = DEFAULT_GEMINI_MODEL
-    finnhub_api_key: SecretStr | None = Field(
+    optional_finnhub_api_key: SecretStr | None = Field(
         default=None,
-        validation_alias="FINNHUB_API_KEY",
+        validation_alias="OPTIONAL_FINNHUB_API_KEY",
     )
     market_context_cache_ttl_seconds: int = 900
     port: int = 7860
@@ -36,8 +37,8 @@ class Settings(BaseSettings):
         return self._key_present(self.google_api_key)
 
     @property
-    def has_finnhub_key(self) -> bool:
-        return self._key_present(self.finnhub_api_key)
+    def optional_finnhub_enabled(self) -> bool:
+        return self._key_present(self.optional_finnhub_api_key)
 
 
 @lru_cache

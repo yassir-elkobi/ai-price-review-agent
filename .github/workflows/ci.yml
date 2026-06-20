@@ -55,7 +55,7 @@ jobs:
           docker stop pva
 
   deploy:
-    name: Deploy to Hugging Face Space
+    name: deploy
     runs-on: ubuntu-latest
     needs: docker
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

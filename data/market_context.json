@@ -1,0 +1,33 @@
+{
+  "AAPL.OQ": [],
+  "MSFT.OQ": [],
+  "NVDA.OQ": [],
+  "TSLA.OQ": [
+    {
+      "date": "2026-06-18",
+      "headline": "Tesla reports quarterly earnings well below consensus expectations",
+      "impact": "high",
+      "type": "earnings"
+    }
+  ],
+  "EURUSD": [
+    {
+      "date": "2026-06-18",
+      "headline": "ECB raises policy rates by 25 bps in a surprise decision",
+      "impact": "high",
+      "type": "monetary_policy"
+    }
+  ],
+  "GLEN.L": [],
+  "XS1234567890": [],
+  "USIG53467890": [
+    {
+      "date": "2026-06-18",
+      "headline": "S&P upgrades Ford credit rating to BBB on improved cash flow outlook",
+      "impact": "high",
+      "type": "credit"
+    }
+  ],
+  "US912828Z989": [],
+  "DE000A1EWWW0": []
+}

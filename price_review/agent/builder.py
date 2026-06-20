@@ -10,6 +10,8 @@ Workflow:
 1. Call get_validation_rules first. Do not assume rules from memory.
 2. If no instrument is specified, call list_instruments_for_validation.
 3. For each instrument: get_price_data, then get_market_context when the move is large or unclear.
+   Desk demo fixtures in market_context.json drive stage outcomes; optional Finnhub headlines
+   are appended only when configured - treat desk notes as authoritative for the demo.
 4. Apply only rules from step 1. Escalate ambiguous cases with escalate_to_human.
 
 For each instrument, state APPROVED, REJECTED, or ESCALATE with the rule number cited.

@@ -9,7 +9,7 @@ pinned: false
 
 # AI Price Review Agent
 
-ReAct agent that reviews end-of-day prices against desk rules. FastAPI UI, Google Gemini, synthetic prices.
+ReAct agent that reviews end-of-day prices against desk rules. FastAPI UI, Google Gemini, synthetic prices, **deterministic desk market context** for stage demos.
 
 ![CI](https://github.com/yassir-elkobi/ai-price-review-agent/actions/workflows/ci.yml/badge.svg)
 
@@ -21,7 +21,7 @@ pip install -r requirements-dev.txt
 cp .env.example .env   # GOOGLE_API_KEY required
 ```
 
-`FINNHUB_API_KEY` for live headlines on equities and FX.
+**Optional live news:** set `OPTIONAL_FINNHUB_API_KEY` to append real Finnhub headlines — results may diverge from announced expected outcomes.
 
 ## Run
 
@@ -44,11 +44,15 @@ price_review/
 ├── api/          FastAPI app, schemas, trace
 ├── agent/        LangGraph ReAct agent + Gemini client
 ├── config/       Settings
-├── market/       Finnhub headlines
+├── market/       Desk demo fixtures + optional Finnhub
 ├── scenarios/    Demo scenario catalog
 ├── tools/        Agent tools
 └── paths.py      Data file locations
-data/             prices, rules, scenarios
+data/
+├── prices.json
+├── rules.txt
+├── scenarios.json
+└── market_context.json   # curated desk events (deterministic demo)
 static/           UI (app.html, css/, js/, svg/)
 ```
 
@@ -73,9 +77,11 @@ On every push to `main`, CI runs tests, builds Docker, then uploads to the Space
 |--------|---------|
 | `HF_TOKEN` | Write token from [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) |
 
-**Space secret** (Space Settings → Secrets):
+**Space secrets** (Settings → Secrets):
 
-| Secret | Purpose                              |
-|--------|--------------------------------------|
-| `GOOGLE_API_KEY` | Gemini API key (required at runtime) |
-| `FINNHUB_API_KEY` | Live headlines                       |
+| Secret | Purpose |
+|--------|---------|
+| `GOOGLE_API_KEY` | Gemini API key (required) |
+| `OPTIONAL_FINNHUB_API_KEY` | Optional - omit for deterministic stage demo |
+
+Verify: `curl https://yassir-elkobi-ai-price-review-agent.hf.space/health` → `"optional_finnhub_enabled": false`

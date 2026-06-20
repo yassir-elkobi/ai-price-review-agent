@@ -93,9 +93,9 @@ def get_validation_rules() -> str:
 def get_market_context(instrument_id: str) -> str:
     """Return market events that may explain a price move for the instrument.
 
-    Call when the daily change is large, near a rule threshold, or the decision
-    depends on whether an event (earnings, central bank, credit, etc.) justifies
-    the move. Returns recorded events or a message that none are on file.
+    Uses curated desk demo fixtures from data/market_context.json (deterministic for
+    the talk). Optional Finnhub headlines are appended only when OPTIONAL_FINNHUB_API_KEY
+    is configured - leave it unset on stage for predictable outcomes.
     """
     try:
         instrument_id = _validate_instrument_id(instrument_id)

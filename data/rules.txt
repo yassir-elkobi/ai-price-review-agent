@@ -23,5 +23,6 @@ They may be edited each morning without changing any code.
 
 5. SENSITIVE CASES (PRIORITY RULE)
    - For any ambiguous case, or when multiple rules conflict,
-     NEVER decide alone: always escalate to a human validator.
+     NEVER decide alone: always ESCALATE and call escalate_to_human.
+   - Every ESCALATE decision MUST invoke escalate_to_human (human queue at /escalations).
    - The agent instructs the decision; a human validates it.

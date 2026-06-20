@@ -21,7 +21,7 @@ pip install -r requirements-dev.txt
 cp .env.example .env   # GOOGLE_API_KEY required
 ```
 
-**Optional live news:** set `OPTIONAL_FINNHUB_API_KEY` to append real Finnhub headlines — results may diverge from announced expected outcomes.
+**Optional live news:** set `OPTIONAL_FINNHUB_API_KEY` to append real Finnhub headlines - results may diverge from announced expected outcomes.
 
 ## Run
 

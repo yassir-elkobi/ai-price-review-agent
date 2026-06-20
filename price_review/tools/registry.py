@@ -108,9 +108,10 @@ def get_market_context(instrument_id: str) -> str:
 def escalate_to_human(instrument_id: str, reason: str) -> str:
     """Escalate a case to a human reviewer instead of deciding alone.
 
-    Use when rules conflict, the case is sensitive, data is insufficient, or the
-    outcome is ambiguous. Provide the instrument id and a short, precise reason.
-    The agent recommends; a human makes the final call.
+    REQUIRED whenever your decision is ESCALATE (rules 1, 3, 4, or 5). Call this tool
+    before writing ESCALATE in your final answer - it records the case for /escalations.
+    Provide the instrument id and a short, precise reason. The agent recommends; a human
+    makes the final call.
     """
     try:
         instrument_id = _validate_instrument_id(instrument_id)

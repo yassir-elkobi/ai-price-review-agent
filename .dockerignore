@@ -1,0 +1,14 @@
+.git
+.github
+.venv
+venv
+.env
+.env.*
+.pytest_cache
+.idea
+tests
+logs
+docs
+*.md
+Dockerfile
+.dockerignore

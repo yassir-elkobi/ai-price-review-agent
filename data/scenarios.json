@@ -1,0 +1,191 @@
+{
+  "scenarios": [
+    {
+      "id": "all-eod",
+      "title": "All EOD prices",
+      "title_fr": "Tous les prix de clôture",
+      "difficulty": "easy",
+      "query": "Validate all end-of-day prices and justify each decision.",
+      "instrument_ids": [],
+      "expected_outcomes": [
+        {"instrument_id": "AAPL.OQ", "decision": "APPROVED", "rule_ref": 1},
+        {"instrument_id": "MSFT.OQ", "decision": "APPROVED", "rule_ref": 1},
+        {"instrument_id": "EURUSD", "decision": "APPROVED", "rule_ref": 1},
+        {"instrument_id": "TSLA.OQ", "decision": "APPROVED", "rule_ref": 1},
+        {"instrument_id": "XS1234567890", "decision": "REJECTED", "rule_ref": 2},
+        {"instrument_id": "USIG53467890", "decision": "APPROVED", "rule_ref": 2},
+        {"instrument_id": "US912828Z989", "decision": "REJECTED", "rule_ref": 2},
+        {"instrument_id": "GLEN.L", "decision": "ESCALATE", "rule_ref": 3},
+        {"instrument_id": "DE000A1EWWW0", "decision": "ESCALATE", "rule_ref": 4},
+        {"instrument_id": "NVDA.OQ", "decision": "ESCALATE", "rule_ref": 1}
+      ],
+      "teaching_note": "Full desk run: the agent lists instruments, reads rules first, then decides per asset class.",
+      "teaching_note_fr": "Run desk complet : l'agent liste les instruments, lit les règles, puis décide par classe d'actifs.",
+      "featured": true
+    },
+    {
+      "id": "aapl-normal",
+      "title": "AAPL normal move",
+      "title_fr": "AAPL mouvement normal",
+      "difficulty": "easy",
+      "query": "Validate the price for AAPL.OQ.",
+      "instrument_ids": ["AAPL.OQ"],
+      "expected_outcomes": [
+        {"instrument_id": "AAPL.OQ", "decision": "APPROVED", "rule_ref": 1}
+      ],
+      "teaching_note": "Baseline case: +1.2% daily change, well inside the 5% equity threshold.",
+      "teaching_note_fr": "Cas de base : +1,2 % de variation, bien en dessous du seuil actions de 5 %.",
+      "featured": true
+    },
+    {
+      "id": "msft-boundary",
+      "title": "MSFT at 5% limit",
+      "title_fr": "MSFT à la limite 5 %",
+      "difficulty": "easy",
+      "query": "Validate the price for MSFT.OQ.",
+      "instrument_ids": ["MSFT.OQ"],
+      "expected_outcomes": [
+        {"instrument_id": "MSFT.OQ", "decision": "APPROVED", "rule_ref": 1}
+      ],
+      "teaching_note": "Boundary case: exactly 5.0% move should still be APPROVED under rule 1 (<= 5%).",
+      "teaching_note_fr": "Cas limite : exactement 5,0 % doit rester APPROVED selon la règle 1 (≤ 5 %)."
+    },
+    {
+      "id": "eurusd-fx-event",
+      "title": "EURUSD with ECB event",
+      "title_fr": "EURUSD avec événement BCE",
+      "difficulty": "easy",
+      "query": "Is the EURUSD price valid today?",
+      "instrument_ids": ["EURUSD"],
+      "expected_outcomes": [
+        {"instrument_id": "EURUSD", "decision": "APPROVED", "rule_ref": 1}
+      ],
+      "teaching_note": "FX within 5% and supported by a central-bank event in market context.",
+      "teaching_note_fr": "FX dans les 5 % et justifié par un événement de banque centrale."
+    },
+    {
+      "id": "tsla-earnings",
+      "title": "TSLA earnings miss",
+      "title_fr": "TSLA résultats décevants",
+      "difficulty": "medium",
+      "query": "Validate TSLA.OQ. The stock moved more than 5% - should it still pass?",
+      "instrument_ids": ["TSLA.OQ"],
+      "expected_outcomes": [
+        {"instrument_id": "TSLA.OQ", "decision": "APPROVED", "rule_ref": 1}
+      ],
+      "teaching_note": "Large move (-6.2%) but explained by an earnings event - APPROVED despite exceeding 5%.",
+      "teaching_note_fr": "Fort mouvement (-6,2 %) mais expliqué par des résultats - APPROVED malgré > 5 %.",
+      "featured": true
+    },
+    {
+      "id": "bond-spike-no-news",
+      "title": "Bond spike, no news",
+      "title_fr": "Obligation en hausse, sans news",
+      "difficulty": "medium",
+      "query": "Validate the bond XS1234567890.",
+      "instrument_ids": ["XS1234567890"],
+      "expected_outcomes": [
+        {"instrument_id": "XS1234567890", "decision": "REJECTED", "rule_ref": 2}
+      ],
+      "teaching_note": "+8.4% on a bond with no credit or rates event - REJECTED by rule 2.",
+      "teaching_note_fr": "+8,4 % sur une obligation sans événement crédit ou taux - REJECTED (règle 2).",
+      "featured": true
+    },
+    {
+      "id": "bond-credit-event",
+      "title": "Bond move with credit event",
+      "title_fr": "Obligation avec événement crédit",
+      "difficulty": "medium",
+      "query": "Validate the bond USIG53467890.",
+      "instrument_ids": ["USIG53467890"],
+      "expected_outcomes": [
+        {"instrument_id": "USIG53467890", "decision": "APPROVED", "rule_ref": 2}
+      ],
+      "teaching_note": "+4.2% bond move justified by a credit upgrade - APPROVED even though change > 3%.",
+      "teaching_note_fr": "+4,2 % justifié par un upgrade crédit - APPROVED malgré > 3 %."
+    },
+    {
+      "id": "glencore-stale",
+      "title": "Glencore stale price",
+      "title_fr": "Glencore prix stale",
+      "difficulty": "medium",
+      "query": "Validate GLEN.L.",
+      "instrument_ids": ["GLEN.L"],
+      "expected_outcomes": [
+        {"instrument_id": "GLEN.L", "decision": "ESCALATE", "rule_ref": 3}
+      ],
+      "teaching_note": "Price unchanged but not refreshed for 3 business days - ESCALATE under rule 3.",
+      "teaching_note_fr": "Prix inchangé mais non rafraîchi depuis 3 jours ouvrés - ESCALATE (règle 3)."
+    },
+    {
+      "id": "bund-divergence",
+      "title": "Bund vs reference",
+      "title_fr": "Bund vs référence",
+      "difficulty": "hard",
+      "query": "Validate DE000A1EWWW0.",
+      "instrument_ids": ["DE000A1EWWW0"],
+      "expected_outcomes": [
+        {"instrument_id": "DE000A1EWWW0", "decision": "ESCALATE", "rule_ref": 4}
+      ],
+      "teaching_note": "Small daily move but -4.3% divergence vs reference vendor - ESCALATE under rule 4.",
+      "teaching_note_fr": "Faible variation journalière mais -4,3 % vs référence - ESCALATE (règle 4)."
+    },
+    {
+      "id": "nvda-unexplained",
+      "title": "NVDA large move, no event",
+      "title_fr": "NVDA forte hausse, sans événement",
+      "difficulty": "hard",
+      "query": "Validate NVDA.OQ.",
+      "instrument_ids": ["NVDA.OQ"],
+      "expected_outcomes": [
+        {"instrument_id": "NVDA.OQ", "decision": "ESCALATE", "rule_ref": 1}
+      ],
+      "teaching_note": "+7.2% equity move with no market event on record - ESCALATE under rule 1.",
+      "teaching_note_fr": "+7,2 % sans événement de marché - ESCALATE (règle 1).",
+      "featured": true
+    },
+    {
+      "id": "nvda-live-flip",
+      "title": "Live rule flip (NVDA)",
+      "title_fr": "Bascule live des règles (NVDA)",
+      "difficulty": "extreme",
+      "query": "Validate NVDA.OQ.",
+      "instrument_ids": ["NVDA.OQ"],
+      "expected_outcomes": [
+        {"instrument_id": "NVDA.OQ", "decision": "ESCALATE", "rule_ref": 1}
+      ],
+      "teaching_note": "Demo moment: change rule 1 threshold from 5% to 10%, save, re-run - decision flips to APPROVED without code changes.",
+      "teaching_note_fr": "Moment clé : passez la règle 1 de 5 % à 10 %, enregistrez, relancez - APPROVED sans changer le code.",
+      "live_flip_hint": "In desk rules, change rule 1 from '5%' to '10%', save, and re-run this query.",
+      "live_flip_hint_fr": "Dans les règles desk, passez la règle 1 de « 5 % » à « 10 % », enregistrez et relancez.",
+      "featured": true
+    },
+    {
+      "id": "mixed-stale-and-earnings",
+      "title": "Stale + earnings pair",
+      "title_fr": "Paire stale + résultats",
+      "difficulty": "hard",
+      "query": "Validate GLEN.L and TSLA.OQ.",
+      "instrument_ids": ["GLEN.L", "TSLA.OQ"],
+      "expected_outcomes": [
+        {"instrument_id": "GLEN.L", "decision": "ESCALATE", "rule_ref": 3},
+        {"instrument_id": "TSLA.OQ", "decision": "APPROVED", "rule_ref": 1}
+      ],
+      "teaching_note": "Multi-instrument request: different rules apply per asset - stale equity vs explained large mover.",
+      "teaching_note_fr": "Multi-instruments : règles différentes - stale vs mouvement expliqué."
+    },
+    {
+      "id": "bond-edge-reject",
+      "title": "Bond just above 3%",
+      "title_fr": "Obligation juste au-dessus de 3 %",
+      "difficulty": "extreme",
+      "query": "Validate US912828Z989.",
+      "instrument_ids": ["US912828Z989"],
+      "expected_outcomes": [
+        {"instrument_id": "US912828Z989", "decision": "REJECTED", "rule_ref": 2}
+      ],
+      "teaching_note": "Treasury +3.15% with no rates event - REJECTED by rule 2 (just above the 3% bond threshold).",
+      "teaching_note_fr": "Treasury +3,15 % sans événement taux - REJECTED (règle 2, juste au-dessus de 3 %)."
+    }
+  ]
+}

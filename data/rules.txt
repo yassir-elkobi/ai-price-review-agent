@@ -1,0 +1,27 @@
+PRICE VALIDATION RULES - Desk note (updated daily)
+Last updated: 2026-06-18 - Author: Senior Middle Office
+
+These rules are applied by the agent at review time.
+They may be edited each morning without changing any code.
+
+1. DAILY VARIATION (Equities / FX)
+   - An absolute change of 5% or less is considered normal -> APPROVED.
+   - Above 5%, the move must be justified by a market event
+     (see the instrument's market context).
+     - If a credible event explains the move -> APPROVED.
+     - Otherwise -> ESCALATE.
+
+2. BONDS
+   - Any change above 3% on a bond is abnormal by default.
+   - If no credit or rates event justifies it -> REJECTED.
+
+3. STALE PRICE
+   - If the price has not been refreshed for more than 1 business day -> ESCALATE.
+
+4. DIVERGENCE VS REFERENCE SOURCE
+   - If the gap vs the reference price (vendor / consensus) exceeds 2% -> ESCALATE.
+
+5. SENSITIVE CASES (PRIORITY RULE)
+   - For any ambiguous case, or when multiple rules conflict,
+     NEVER decide alone: always escalate to a human validator.
+   - The agent instructs the decision; a human validates it.

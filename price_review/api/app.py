@@ -1,16 +1,16 @@
 import logging
-from collections import deque
-from datetime import datetime, timezone
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+
+from price_review import paths
 from price_review.agent import build_agent
 from price_review.agent.llm import format_llm_error
 from price_review.api.logging_setup import setup_logging
 from price_review.api.schemas import RulesRequest, ValidateRequest
 from price_review.api.trace import extract_trace
 from price_review.config import get_settings
-from price_review import paths
 from price_review.scenarios import load_scenarios
 from price_review.tools import get_escalations_snapshot
 
@@ -20,8 +20,6 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title="AI Price Review Agent")
 app.mount("/static", StaticFiles(directory=str(paths.STATIC_DIR)), name="static")
 
-_HISTORY_MAXLEN = 50
-_history: deque = deque(maxlen=_HISTORY_MAXLEN)
 _agent = None
 
 
@@ -75,7 +73,6 @@ def health():
         "model": settings.llm_model,
         "has_key": settings.has_llm_key,
         "market_context": "desk_demo_fixtures",
-        "optional_finnhub_enabled": settings.optional_finnhub_enabled,
     }
 
 
@@ -103,14 +100,6 @@ def validate(req: ValidateRequest):
     try:
         result = agent.invoke({"messages": [{"role": "user", "content": req.query}]})
         final_answer, steps = extract_trace(result["messages"])
-        _history.append(
-            {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-                "query": req.query,
-                "final_answer": final_answer,
-                "steps": steps,
-            }
-        )
         logger.info("Review completed (%d steps).", len(steps))
         return {"final_answer": final_answer, "steps": steps}
     except Exception as exc:
@@ -133,11 +122,6 @@ def get_scenarios(featured: bool | None = None):
         "count": len(scenarios),
         "scenarios": [item.model_dump() for item in scenarios],
     }
-
-
-@app.get("/history")
-def get_history():
-    return {"count": len(_history), "results": list(_history)}
 
 
 if __name__ == "__main__":

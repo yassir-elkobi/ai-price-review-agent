@@ -3,6 +3,7 @@ import logging
 import threading
 
 from langchain_core.tools import tool
+
 from price_review import paths
 from price_review.market.context import get_market_context_text
 
@@ -36,31 +37,23 @@ def get_escalations_snapshot() -> list[dict]:
 
 
 @tool
-def list_instruments_for_validation() -> str:
-    """List every instrument that needs an end-of-day price review today.
-
-    Call this when the user asks to review all prices, the full book, or EOD prices
-    without naming a specific instrument. Returns the as-of date and, for each line,
-    the instrument id, name, asset class, and daily percentage change.
-    """
-    data = _load_prices()
-    lines = [f"As-of date: {data['as_of_date']}", "Instruments to validate:"]
-    for item in data["instruments"]:
-        lines.append(
-            f"- {item['instrument_id']} | {item['name']} | {item['asset_class']} "
-            f"| change {item['pct_change']:+.2f}%"
-        )
-    return "\n".join(lines)
-
-
-@tool
 def get_price_data(instrument_id: str) -> str:
-    """Return full price data for one instrument.
+    """Fetch end-of-day price data for ONE instrument before applying desk rules.
 
-    Use the exact identifier (e.g. 'AAPL.OQ', 'XS1234567890', 'EURUSD').
-    Returns today's price, prior price, reference price, daily change %,
-    divergence vs reference %, last update, business days since refresh, and source.
-    Call once per instrument before applying the rules.
+    WHEN TO CALL:
+    - Once per instrument named in the user request (e.g. "Validate NVDA.OQ").
+    - After get_validation_rules, before you state APPROVED, REJECTED, or ESCALATE.
+    - Do not decide from memory; always read fresh data from this tool.
+
+    instrument_id: exact desk identifier. Examples: 'AAPL.OQ', 'NVDA.OQ', 'TSLA.OQ',
+    'GLEN.L', 'EURUSD', 'XS1234567890' (bond ISIN). Case-insensitive match.
+
+    RETURNS (JSON): instrument_id, name, asset_class, price_today, price_prior,
+    reference_price, pct_change (daily %), divergence_vs_reference_pct,
+    last_update, business_days_since_update (rule 3 stale check), source.
+
+    Use asset_class to pick the right rule block (equity/FX vs bond). If the id is
+    unknown, the tool returns an error message instead of JSON.
     """
     try:
         instrument_id = _validate_instrument_id(instrument_id)
@@ -76,11 +69,21 @@ def get_price_data(instrument_id: str) -> str:
 
 @tool
 def get_validation_rules() -> str:
-    """Return the desk price review rules in effect today.
+    """Return the desk price review rules in effect RIGHT NOW. Call this FIRST on every request.
 
-    Always call this first on every request. Rules are read fresh from the desk note;
-    do not rely on rules from a previous turn or from memory. The text may change
-    between sessions.
+    WHEN TO CALL:
+    - Always as your first tool call when the user asks for a price review.
+    - Again after the user edits rules in the UI (rules change at runtime without redeploy).
+    - Never apply rules from a previous turn or from your training data.
+
+    RETURNS: full text of data/rules.txt - five rule blocks:
+    1) daily variation (equities/FX, 5% threshold + market event),
+    2) bonds (>3% abnormal, REJECTED unless event),
+    3) stale price (>1 business day -> ESCALATE),
+    4) divergence vs reference (>2% -> ESCALATE),
+    5) sensitive/ambiguous cases -> ESCALATE + escalate_to_human.
+
+    Your final answer must cite the rule NUMBER (1-5) for each instrument.
     """
     try:
         return paths.RULES_PATH.read_text(encoding="utf-8")
@@ -91,11 +94,23 @@ def get_validation_rules() -> str:
 
 @tool
 def get_market_context(instrument_id: str) -> str:
-    """Return market events that may explain a price move for the instrument.
+    """Return market events that may EXPLAIN a price move for one instrument.
 
-    Uses curated desk demo fixtures from data/market_context.json (deterministic for
-    the talk). Optional Finnhub headlines are appended only when OPTIONAL_FINNHUB_API_KEY
-    is configured - leave it unset on stage for predictable outcomes.
+    WHEN TO CALL:
+    - After get_price_data for the same instrument_id.
+    - Equities/FX: required when abs(pct_change) > 5% (rule 1 - need event to APPROVE).
+    - Bonds: when pct_change > 3% and you must check for credit/rates news (rule 2).
+    - Any time the move is large, stale, divergent, or the decision is unclear.
+    - Skip only for obvious small moves well inside thresholds (e.g. AAPL +1.2%).
+
+    instrument_id: same identifier as get_price_data (e.g. 'TSLA.OQ', 'EURUSD').
+
+    RETURNS: curated desk demo fixtures from data/market_context.json.
+    - If events are listed: use them to justify APPROVED on large moves.
+    - If "No market events on record": no credible event on file - often ESCALATE
+      (equity >5%) or REJECTED (bond >3%), per the rules you read in step 1.
+
+    Treat desk fixture text as authoritative for this demo.
     """
     try:
         instrument_id = _validate_instrument_id(instrument_id)
@@ -106,12 +121,22 @@ def get_market_context(instrument_id: str) -> str:
 
 @tool
 def escalate_to_human(instrument_id: str, reason: str) -> str:
-    """Escalate a case to a human reviewer instead of deciding alone.
+    """Record an ESCALATE decision in the human review queue (/escalations).
 
-    REQUIRED whenever your decision is ESCALATE (rules 1, 3, 4, or 5). Call this tool
-    before writing ESCALATE in your final answer - it records the case for /escalations.
-    Provide the instrument id and a short, precise reason. The agent recommends; a human
-    makes the final call.
+    WHEN TO CALL - REQUIRED (do not skip):
+    - Whenever your decision for an instrument is ESCALATE (rules 1, 3, 4, or 5).
+    - BEFORE you write ESCALATE in your final answer to the user.
+    - Once per escalated instrument (NVDA and GLEN.L = two separate calls).
+
+    DO NOT CALL for APPROVED or REJECTED - only for ESCALATE.
+
+    instrument_id: exact id being escalated (e.g. 'NVDA.OQ', 'GLEN.L').
+    reason: one short sentence - cite the rule and fact (e.g. "+7.2% with no market
+    event on record (rule 1)" or "price stale 3 business days (rule 3)").
+
+    Side effect: appends to /escalations so a human validator sees the case.
+    The agent recommends; a human makes the final call. Never state ESCALATE
+    without calling this tool first.
     """
     try:
         instrument_id = _validate_instrument_id(instrument_id)
@@ -126,7 +151,6 @@ def escalate_to_human(instrument_id: str, reason: str) -> str:
 
 
 TOOLS = [
-    list_instruments_for_validation,
     get_price_data,
     get_validation_rules,
     get_market_context,

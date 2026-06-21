@@ -1,29 +1,6 @@
 {
   "scenarios": [
     {
-      "id": "all-eod",
-      "title": "All EOD prices",
-      "title_fr": "Tous les prix de clôture",
-      "difficulty": "easy",
-      "query": "Validate all end-of-day prices and justify each decision.",
-      "instrument_ids": [],
-      "expected_outcomes": [
-        {"instrument_id": "AAPL.OQ", "decision": "APPROVED", "rule_ref": 1},
-        {"instrument_id": "MSFT.OQ", "decision": "APPROVED", "rule_ref": 1},
-        {"instrument_id": "EURUSD", "decision": "APPROVED", "rule_ref": 1},
-        {"instrument_id": "TSLA.OQ", "decision": "APPROVED", "rule_ref": 1},
-        {"instrument_id": "XS1234567890", "decision": "REJECTED", "rule_ref": 2},
-        {"instrument_id": "USIG53467890", "decision": "APPROVED", "rule_ref": 2},
-        {"instrument_id": "US912828Z989", "decision": "REJECTED", "rule_ref": 2},
-        {"instrument_id": "GLEN.L", "decision": "ESCALATE", "rule_ref": 3},
-        {"instrument_id": "DE000A1EWWW0", "decision": "ESCALATE", "rule_ref": 4},
-        {"instrument_id": "NVDA.OQ", "decision": "ESCALATE", "rule_ref": 1}
-      ],
-      "teaching_note": "Full desk run: the agent lists instruments, reads rules first, then decides per asset class.",
-      "teaching_note_fr": "Run desk complet : l'agent liste les instruments, lit les règles, puis décide par classe d'actifs.",
-      "featured": true
-    },
-    {
       "id": "aapl-normal",
       "title": "AAPL normal move",
       "title_fr": "AAPL mouvement normal",
@@ -38,19 +15,6 @@
       "featured": true
     },
     {
-      "id": "msft-boundary",
-      "title": "MSFT at 5% limit",
-      "title_fr": "MSFT à la limite 5 %",
-      "difficulty": "easy",
-      "query": "Validate the price for MSFT.OQ.",
-      "instrument_ids": ["MSFT.OQ"],
-      "expected_outcomes": [
-        {"instrument_id": "MSFT.OQ", "decision": "APPROVED", "rule_ref": 1}
-      ],
-      "teaching_note": "Boundary case: exactly 5.0% move should still be APPROVED under rule 1 (<= 5%).",
-      "teaching_note_fr": "Cas limite : exactement 5,0 % doit rester APPROVED selon la règle 1 (≤ 5 %)."
-    },
-    {
       "id": "eurusd-fx-event",
       "title": "EURUSD with ECB event",
       "title_fr": "EURUSD avec événement BCE",
@@ -61,7 +25,8 @@
         {"instrument_id": "EURUSD", "decision": "APPROVED", "rule_ref": 1}
       ],
       "teaching_note": "FX within 5% and supported by a central-bank event in market context.",
-      "teaching_note_fr": "FX dans les 5 % et justifié par un événement de banque centrale."
+      "teaching_note_fr": "FX dans les 5 % et justifié par un événement de banque centrale.",
+      "featured": true
     },
     {
       "id": "tsla-earnings",
@@ -92,19 +57,6 @@
       "featured": true
     },
     {
-      "id": "bond-credit-event",
-      "title": "Bond move with credit event",
-      "title_fr": "Obligation avec événement crédit",
-      "difficulty": "medium",
-      "query": "Validate the bond USIG53467890.",
-      "instrument_ids": ["USIG53467890"],
-      "expected_outcomes": [
-        {"instrument_id": "USIG53467890", "decision": "APPROVED", "rule_ref": 2}
-      ],
-      "teaching_note": "+4.2% bond move justified by a credit upgrade - APPROVED even though change > 3%.",
-      "teaching_note_fr": "+4,2 % justifié par un upgrade crédit - APPROVED malgré > 3 %."
-    },
-    {
       "id": "glencore-stale",
       "title": "Glencore stale price",
       "title_fr": "Glencore prix stale",
@@ -115,20 +67,8 @@
         {"instrument_id": "GLEN.L", "decision": "ESCALATE", "rule_ref": 3}
       ],
       "teaching_note": "Price unchanged but not refreshed for 3 business days - ESCALATE under rule 3.",
-      "teaching_note_fr": "Prix inchangé mais non rafraîchi depuis 3 jours ouvrés - ESCALATE (règle 3)."
-    },
-    {
-      "id": "bund-divergence",
-      "title": "Bund vs reference",
-      "title_fr": "Bund vs référence",
-      "difficulty": "hard",
-      "query": "Validate DE000A1EWWW0.",
-      "instrument_ids": ["DE000A1EWWW0"],
-      "expected_outcomes": [
-        {"instrument_id": "DE000A1EWWW0", "decision": "ESCALATE", "rule_ref": 4}
-      ],
-      "teaching_note": "Small daily move but -4.3% divergence vs reference vendor - ESCALATE under rule 4.",
-      "teaching_note_fr": "Faible variation journalière mais -4,3 % vs référence - ESCALATE (règle 4)."
+      "teaching_note_fr": "Prix inchangé mais non rafraîchi depuis 3 jours ouvrés - ESCALATE (règle 3).",
+      "featured": true
     },
     {
       "id": "nvda-unexplained",
@@ -159,33 +99,6 @@
       "live_flip_hint": "In desk rules, change rule 1 from '5%' to '10%', save, and re-run this query.",
       "live_flip_hint_fr": "Dans les règles desk, passez la règle 1 de « 5 % » à « 10 % », enregistrez et relancez.",
       "featured": true
-    },
-    {
-      "id": "mixed-stale-and-earnings",
-      "title": "Stale + earnings pair",
-      "title_fr": "Paire stale + résultats",
-      "difficulty": "hard",
-      "query": "Validate GLEN.L and TSLA.OQ.",
-      "instrument_ids": ["GLEN.L", "TSLA.OQ"],
-      "expected_outcomes": [
-        {"instrument_id": "GLEN.L", "decision": "ESCALATE", "rule_ref": 3},
-        {"instrument_id": "TSLA.OQ", "decision": "APPROVED", "rule_ref": 1}
-      ],
-      "teaching_note": "Multi-instrument request: different rules apply per asset - stale equity vs explained large mover.",
-      "teaching_note_fr": "Multi-instruments : règles différentes - stale vs mouvement expliqué."
-    },
-    {
-      "id": "bond-edge-reject",
-      "title": "Bond just above 3%",
-      "title_fr": "Obligation juste au-dessus de 3 %",
-      "difficulty": "extreme",
-      "query": "Validate US912828Z989.",
-      "instrument_ids": ["US912828Z989"],
-      "expected_outcomes": [
-        {"instrument_id": "US912828Z989", "decision": "REJECTED", "rule_ref": 2}
-      ],
-      "teaching_note": "Treasury +3.15% with no rates event - REJECTED by rule 2 (just above the 3% bond threshold).",
-      "teaching_note_fr": "Treasury +3,15 % sans événement taux - REJECTED (règle 2, juste au-dessus de 3 %)."
     }
   ]
 }

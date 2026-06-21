@@ -26,6 +26,9 @@ jobs:
       - name: Run tests
         run: pytest tests/ -q
 
+      - name: Lint and format check
+        run: ruff check . && ruff format --check .
+
   docker:
     runs-on: ubuntu-latest
     needs: test

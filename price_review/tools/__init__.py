@@ -9,7 +9,6 @@ from price_review.tools.registry import (
     get_market_context,
     get_price_data,
     get_validation_rules,
-    list_instruments_for_validation,
 )
 
 __all__ = [
@@ -23,5 +22,4 @@ __all__ = [
     "get_market_context",
     "get_price_data",
     "get_validation_rules",
-    "list_instruments_for_validation",
 ]

@@ -1,6 +1,5 @@
 {
   "AAPL.OQ": [],
-  "MSFT.OQ": [],
   "NVDA.OQ": [],
   "TSLA.OQ": [
     {
@@ -19,15 +18,5 @@
     }
   ],
   "GLEN.L": [],
-  "XS1234567890": [],
-  "USIG53467890": [
-    {
-      "date": "2026-06-18",
-      "headline": "S&P upgrades Ford credit rating to BBB on improved cash flow outlook",
-      "impact": "high",
-      "type": "credit"
-    }
-  ],
-  "US912828Z989": [],
-  "DE000A1EWWW0": []
+  "XS1234567890": []
 }

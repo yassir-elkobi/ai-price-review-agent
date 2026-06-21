@@ -19,11 +19,6 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("GOOGLE_API_KEY", "GEMINI_API_KEY"),
     )
     llm_model: str = DEFAULT_GEMINI_MODEL
-    optional_finnhub_api_key: SecretStr | None = Field(
-        default=None,
-        validation_alias="OPTIONAL_FINNHUB_API_KEY",
-    )
-    market_context_cache_ttl_seconds: int = 900
     port: int = 7860
 
     @staticmethod
@@ -35,10 +30,6 @@ class Settings(BaseSettings):
     @property
     def has_llm_key(self) -> bool:
         return self._key_present(self.google_api_key)
-
-    @property
-    def optional_finnhub_enabled(self) -> bool:
-        return self._key_present(self.optional_finnhub_api_key)
 
 
 @lru_cache

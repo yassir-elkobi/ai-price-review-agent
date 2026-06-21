@@ -43,8 +43,6 @@ def validate_scenario_references(catalog: ScenarioCatalog | None = None) -> list
 
         for outcome in scenario.expected_outcomes:
             if outcome.instrument_id not in known:
-                errors.append(
-                    f"{scenario.id}: unknown outcome instrument {outcome.instrument_id}"
-                )
+                errors.append(f"{scenario.id}: unknown outcome instrument {outcome.instrument_id}")
 
     return errors

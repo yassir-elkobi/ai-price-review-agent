@@ -16,20 +16,6 @@
       "source": "Reuters"
     },
     {
-      "instrument_id": "MSFT.OQ",
-      "name": "Microsoft Corp.",
-      "asset_class": "Equity",
-      "currency": "USD",
-      "price_today": 420.00,
-      "price_prior": 400.00,
-      "reference_price": 419.50,
-      "pct_change": 5.00,
-      "divergence_vs_reference_pct": 0.12,
-      "last_update": "2026-06-18T17:30:00Z",
-      "business_days_since_update": 0,
-      "source": "Reuters"
-    },
-    {
       "instrument_id": "NVDA.OQ",
       "name": "NVIDIA Corp.",
       "asset_class": "Equity",
@@ -39,6 +25,20 @@
       "reference_price": 128.20,
       "pct_change": 7.22,
       "divergence_vs_reference_pct": 0.23,
+      "last_update": "2026-06-18T17:30:00Z",
+      "business_days_since_update": 0,
+      "source": "Reuters"
+    },
+    {
+      "instrument_id": "TSLA.OQ",
+      "name": "Tesla Inc.",
+      "asset_class": "Equity",
+      "currency": "USD",
+      "price_today": 238.40,
+      "price_prior": 254.10,
+      "reference_price": 238.65,
+      "pct_change": -6.18,
+      "divergence_vs_reference_pct": -0.10,
       "last_update": "2026-06-18T17:30:00Z",
       "business_days_since_update": 0,
       "source": "Reuters"
@@ -54,34 +54,6 @@
       "pct_change": 8.41,
       "divergence_vs_reference_pct": 8.20,
       "last_update": "2026-06-18T17:05:00Z",
-      "business_days_since_update": 0,
-      "source": "Bloomberg"
-    },
-    {
-      "instrument_id": "USIG53467890",
-      "name": "Ford Motor 3.25% 2032 (Senior Bond)",
-      "asset_class": "Bond",
-      "currency": "USD",
-      "price_today": 98.40,
-      "price_prior": 94.45,
-      "reference_price": 98.10,
-      "pct_change": 4.18,
-      "divergence_vs_reference_pct": 0.31,
-      "last_update": "2026-06-18T17:05:00Z",
-      "business_days_since_update": 0,
-      "source": "Bloomberg"
-    },
-    {
-      "instrument_id": "US912828Z989",
-      "name": "US Treasury 2.875% 2029",
-      "asset_class": "Bond",
-      "currency": "USD",
-      "price_today": 97.85,
-      "price_prior": 94.86,
-      "reference_price": 97.90,
-      "pct_change": 3.15,
-      "divergence_vs_reference_pct": -0.05,
-      "last_update": "2026-06-18T17:10:00Z",
       "business_days_since_update": 0,
       "source": "Bloomberg"
     },
@@ -111,34 +83,6 @@
       "divergence_vs_reference_pct": -1.73,
       "last_update": "2026-06-13T17:30:00Z",
       "business_days_since_update": 3,
-      "source": "Reuters"
-    },
-    {
-      "instrument_id": "DE000A1EWWW0",
-      "name": "Bund 2.30% 2034 (German Govt Bond)",
-      "asset_class": "Bond",
-      "currency": "EUR",
-      "price_today": 98.10,
-      "price_prior": 98.05,
-      "reference_price": 102.55,
-      "pct_change": 0.05,
-      "divergence_vs_reference_pct": -4.34,
-      "last_update": "2026-06-18T17:10:00Z",
-      "business_days_since_update": 0,
-      "source": "Internal Pricing Model"
-    },
-    {
-      "instrument_id": "TSLA.OQ",
-      "name": "Tesla Inc.",
-      "asset_class": "Equity",
-      "currency": "USD",
-      "price_today": 238.40,
-      "price_prior": 254.10,
-      "reference_price": 238.65,
-      "pct_change": -6.18,
-      "divergence_vs_reference_pct": -0.10,
-      "last_update": "2026-06-18T17:30:00Z",
-      "business_days_since_update": 0,
       "source": "Reuters"
     }
   ]

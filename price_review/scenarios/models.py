@@ -1,4 +1,5 @@
 from typing import Literal
+
 from pydantic import BaseModel, Field
 
 Difficulty = Literal["easy", "medium", "hard", "extreme"]

@@ -1,3 +1,12 @@
+---
+title: AI Price Review Agent
+colorFrom: purple
+colorTo: yellow
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # AI Price Review Agent
 
 ReAct agent for **Let's Talk - Partie 1** (*Comprendre et concevoir un agent*). Reviews end-of-day prices instrument-by-instrument against desk rules that can change at runtime.

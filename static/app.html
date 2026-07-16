@@ -38,9 +38,17 @@
 
 <div class="wrap">
     <div class="hero-strip">
-        <span class="pill">Let's Talk · Partie 1 | Comprendre &amp; Concevoir un Agent IA</span>
+        <span class="pill">Let's Talk · Partie 2 | Du Solo au Système Fiable</span>
     </div>
 
+    <nav class="tabs" id="tabs">
+        <button class="tab-btn active" data-tab="review" type="button">Revue solo</button>
+        <button class="tab-btn" data-tab="book" type="button">Book</button>
+        <button class="tab-btn" data-tab="evaluation" type="button">Évaluation</button>
+        <button class="tab-btn" data-tab="security" type="button">Sécurité</button>
+    </nav>
+
+    <section class="tab-panel" data-panel="review">
     <div class="grid">
         <div>
             <div class="card">
@@ -93,6 +101,68 @@
             </div>
         </div>
     </div>
+    </section>
+
+    <section class="tab-panel" data-panel="book" hidden>
+        <div class="card">
+            <div class="card-head"><h2>Validation du book - multi-agents</h2></div>
+            <div class="pad">
+                <p class="muted">Superviseur -&gt; sous-agents Equities / Fixed Income / FX exécutés <strong>en parallèle</strong> (LangGraph <code>Send</code>) -&gt; agent Synthèse qui agrège le rapport de desk.</p>
+                <div class="run">
+                    <button class="primary" id="goBook">Valider tout le book</button>
+                    <span class="status" id="bookStatus"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card hidden-card" id="bookBranches">
+            <div class="card-head"><h2>Branches parallèles</h2></div>
+            <div class="pad branches-grid" id="branchesGrid"></div>
+        </div>
+        <div class="card hidden-card" id="bookReport">
+            <div class="card-head"><h2>Rapport de synthèse</h2></div>
+            <div class="pad"><div class="body" id="bookReportBody"></div></div>
+        </div>
+    </section>
+
+    <section class="tab-panel" data-panel="evaluation" hidden>
+        <div class="card">
+            <div class="card-head"><h2>Harness d'évaluation</h2></div>
+            <div class="pad">
+                <p class="muted">Rejoue chaque scénario de <code>data/scenarios.json</code> sur l'agent live et compare au verdict attendu (décision + règle + appel effectif de <code>escalate_to_human</code>).</p>
+                <div class="run">
+                    <button class="primary" id="goEval">Lancer l'évaluation</button>
+                    <span class="status" id="evalStatus"></span>
+                </div>
+                <div class="eval-score hidden-card" id="evalScore"></div>
+            </div>
+        </div>
+        <div class="card hidden-card" id="evalResults">
+            <div class="card-head"><h2>Résultats par scénario</h2></div>
+            <div class="pad" id="evalTableWrap"></div>
+        </div>
+    </section>
+
+    <section class="tab-panel" data-panel="security" hidden>
+        <div class="card">
+            <div class="card-head"><h2>SecurityLayer</h2></div>
+            <div class="pad">
+                <label class="toggle-row" for="securityToggle">
+                    <span class="toggle-switch">
+                        <input type="checkbox" id="securityToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </span>
+                    <span class="toggle-label" id="securityLabel">Mode protégé</span>
+                </label>
+                <p class="hint">Désactivez pour rejouer l'agent non protégé face à une injection de prompt (ex. dans <code>market_context.json</code>) : sans le filtre, l'agent peut suivre l'instruction cachée au lieu de l'ignorer.</p>
+            </div>
+        </div>
+        <div class="card" id="securityEventsCard">
+            <div class="card-head"><h2>Journal des tentatives détectées</h2></div>
+            <div class="pad" id="securityEventsBody">
+                <div class="tl-empty">Aucun événement pour le moment.</div>
+            </div>
+        </div>
+    </section>
 </div>
 
 <script src="/static/js/app.js"></script>

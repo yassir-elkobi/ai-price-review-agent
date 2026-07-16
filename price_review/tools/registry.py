@@ -6,6 +6,9 @@ from langchain_core.tools import tool
 
 from price_review import paths
 from price_review.market.context import get_market_context_text
+from price_review.memory import get_decision_history_text, get_sector_context_text
+from price_review.prices import load_prices as _load_prices
+from price_review.security import guard_tool_output
 
 logger = logging.getLogger(__name__)
 
@@ -21,14 +24,6 @@ def _validate_instrument_id(instrument_id: str) -> str:
     if len(value) > _MAX_ID_LEN:
         raise ValueError(f"instrument_id is too long (max {_MAX_ID_LEN} chars).")
     return value
-
-
-def _load_prices() -> dict:
-    try:
-        return json.loads(paths.PRICES_PATH.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        logger.error("Failed to load prices from %s: %s", paths.PRICES_PATH, exc)
-        raise
 
 
 def get_escalations_snapshot() -> list[dict]:
@@ -116,7 +111,57 @@ def get_market_context(instrument_id: str) -> str:
         instrument_id = _validate_instrument_id(instrument_id)
     except ValueError as exc:
         return str(exc)
-    return get_market_context_text(instrument_id)
+    raw_text = get_market_context_text(instrument_id)
+    return guard_tool_output("market_context.json", instrument_id, raw_text)
+
+
+@tool
+def get_decision_history(instrument_id: str) -> str:
+    """Recall past desk decisions for ONE instrument (Qdrant RAG).
+
+    WHEN TO CALL:
+    - When a move looks recurring, borderline, or you want precedent before
+      deciding (e.g. "has this instrument escalated before?").
+    - Not required for obviously normal moves inside every threshold.
+
+    instrument_id: same identifier as get_price_data.
+
+    RETURNS: up to 5 most recent past decisions for this instrument (verdict,
+    rule cited, short reasoning, timestamp), or a message saying there is no
+    history yet. Use this to spot patterns (e.g. repeated ESCALATE) - it does
+    not override the desk rules, it only informs your reasoning.
+    """
+    try:
+        instrument_id = _validate_instrument_id(instrument_id)
+    except ValueError as exc:
+        return str(exc)
+    raw_text = get_decision_history_text(instrument_id)
+    return guard_tool_output("decision_history (Qdrant)", instrument_id, raw_text)
+
+
+@tool
+def get_sector_context(instrument_id: str) -> str:
+    """GraphRAG over sector/peer relations (Neo4j) for ONE instrument.
+
+    WHEN TO CALL:
+    - When get_market_context returns no direct news but the move is large -
+      a correlated peer or sector-wide event may still explain it.
+    - Example: NVDA has no news of its own, but AMD (same sector) just posted
+      a blow-out earnings beat - that is relevant context for NVDA's move.
+
+    instrument_id: same identifier as get_price_data.
+
+    RETURNS: the instrument's sector/country, any recent sector-wide events,
+    and correlated peer instruments. This can support (not replace) a rule 1
+    justification - state clearly in your final answer if you used sector
+    context instead of a direct instrument event.
+    """
+    try:
+        instrument_id = _validate_instrument_id(instrument_id)
+    except ValueError as exc:
+        return str(exc)
+    raw_text = get_sector_context_text(instrument_id)
+    return guard_tool_output("sector_graph (Neo4j)", instrument_id, raw_text)
 
 
 @tool
@@ -154,5 +199,7 @@ TOOLS = [
     get_price_data,
     get_validation_rules,
     get_market_context,
+    get_decision_history,
+    get_sector_context,
     escalate_to_human,
 ]

@@ -11,6 +11,8 @@ def reset_cache():
 
 
 class TestDeskFixtures:
+    """market_context.json fixtures return the expected per-instrument content."""
+
     def test_nvda_has_no_desk_events(self):
         result = market_context.get_market_context_text("NVDA.OQ")
         assert "desk demo fixtures" in result
@@ -26,6 +28,8 @@ class TestDeskFixtures:
 
 
 class TestCache:
+    """Repeated lookups for the same instrument hit the in-process cache."""
+
     def test_second_call_uses_cache(self):
         market_context.get_market_context_text("NVDA.OQ")
         market_context.get_market_context_text("NVDA.OQ")

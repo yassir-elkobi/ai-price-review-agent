@@ -7,12 +7,16 @@ Decision = Literal["APPROVED", "REJECTED", "ESCALATE"]
 
 
 class ExpectedOutcome(BaseModel):
+    """Expected verdict for one instrument within a scenario."""
+
     instrument_id: str
     decision: Decision
     rule_ref: int = Field(ge=1, le=5)
 
 
 class Scenario(BaseModel):
+    """One live-demo scenario: a query plus its expected outcomes."""
+
     id: str
     title: str
     title_fr: str
@@ -28,4 +32,6 @@ class Scenario(BaseModel):
 
 
 class ScenarioCatalog(BaseModel):
+    """Full set of scenarios loaded from data/scenarios.json."""
+
     scenarios: list[Scenario]

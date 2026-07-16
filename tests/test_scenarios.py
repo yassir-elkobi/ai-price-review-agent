@@ -2,6 +2,8 @@ from price_review.scenarios import load_scenarios, validate_scenario_references
 
 
 class TestScenarioCatalog:
+    """data/scenarios.json loads cleanly and stays consistent with prices.json."""
+
     def test_loads_without_errors(self):
         assert len(load_scenarios().scenarios) == 7
 

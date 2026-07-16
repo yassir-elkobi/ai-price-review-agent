@@ -1,0 +1,40 @@
+{
+  "instruments": {
+    "AAPL.OQ": {"sector": "Technology Hardware", "country": "US"},
+    "NVDA.OQ": {"sector": "Semiconductors", "country": "US"},
+    "TSLA.OQ": {"sector": "Automotive", "country": "US"},
+    "GLEN.L": {"sector": "Mining & Commodities", "country": "GB"},
+    "XS1234567890": {"sector": "Energy Credit", "country": "FR"},
+    "EURUSD": {"sector": "G10 FX", "country": "EU"}
+  },
+  "correlations": {
+    "NVDA.OQ": ["AMD.OQ", "AVGO.OQ"],
+    "AAPL.OQ": ["MSFT.OQ"],
+    "TSLA.OQ": ["RIVN.OQ"],
+    "GLEN.L": ["RIO.L", "AAL.L"],
+    "XS1234567890": ["ENGIE.PA"],
+    "EURUSD": ["GBPUSD", "USDJPY"]
+  },
+  "sector_events": {
+    "Semiconductors": [
+      {
+        "date": "2026-06-18",
+        "headline": "AMD reports blow-out quarterly earnings, raises full-year guidance on AI accelerator demand",
+        "impact": "high",
+        "related_instrument": "AMD.OQ"
+      }
+    ],
+    "Technology Hardware": [],
+    "Automotive": [],
+    "Mining & Commodities": [
+      {
+        "date": "2026-06-15",
+        "headline": "Base metal prices flat; no sector-wide catalyst reported this week",
+        "impact": "low",
+        "related_instrument": "RIO.L"
+      }
+    ],
+    "Energy Credit": [],
+    "G10 FX": []
+  }
+}

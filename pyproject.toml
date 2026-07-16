@@ -1,3 +1,9 @@
+[project]
+name = "ai-price-review-agent"
+version = "2.0.0"
+description = "ReAct agent for end-of-day price review, with memory, multi-agent orchestration, evaluation, and security layers."
+requires-python = ">=3.12"
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"

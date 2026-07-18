@@ -44,6 +44,30 @@ def _closest_rule_match(text: str, anchor_start: int, anchor_end: int) -> re.Mat
     return min(candidates, key=lambda m: abs((m.start() + m.end()) / 2 - anchor))
 
 
+def _parse_window(forward: str, backward: str) -> tuple[str, int | None] | None:
+    """Extract one (decision, rule) pair from a forward window and its backward fallback."""
+    combined = _ANCHORED_DECISION_WITH_RULE_RE.search(forward)
+    if combined is not None:
+        return combined.group(1).upper(), int(combined.group(2))
+
+    decision_match = _ANCHORED_DECISION_RE.search(forward) or _DECISION_RE.search(forward)
+    rule_match = None
+
+    if decision_match is None:
+        decision_match = _ANCHORED_DECISION_RE.search(backward) or _DECISION_RE.search(backward)
+        rule_match = _RULE_RE.search(backward)
+
+    if decision_match is None:
+        return None
+
+    if rule_match is None:
+        rule_match = _closest_rule_match(
+            forward, decision_match.start(), decision_match.end()
+        ) or _RULE_RE.search(forward)
+
+    return decision_match.group(1).upper(), int(rule_match.group(1)) if rule_match else None
+
+
 def parse_decisions(text: str, known_instrument_ids: list[str]) -> list[ParsedDecision]:
     if not text:
         return []
@@ -54,7 +78,18 @@ def parse_decisions(text: str, known_instrument_ids: list[str]) -> list[ParsedDe
 
     for instrument_id, upper_id in zip(known_instrument_ids, upper_ids):
         index = upper_text.find(upper_id)
+
         if index == -1:
+            if len(known_instrument_ids) != 1:
+                continue
+            parsed = _parse_window(forward=text, backward="")
+            if parsed is not None:
+                decision, rule_ref = parsed
+                results.append(
+                    ParsedDecision(
+                        instrument_id=instrument_id, decision=decision, rule_ref=rule_ref
+                    )
+                )
             continue
 
         end = index + len(instrument_id)
@@ -68,40 +103,15 @@ def parse_decisions(text: str, known_instrument_ids: list[str]) -> list[ParsedDe
                 boundary = min(boundary, pos)
 
         forward = text[end:boundary]
+        backward = text[max(0, index - _WINDOW_BEFORE) : index]
 
-        combined = _ANCHORED_DECISION_WITH_RULE_RE.search(forward)
-        if combined is not None:
-            results.append(
-                ParsedDecision(
-                    instrument_id=instrument_id,
-                    decision=combined.group(1).upper(),
-                    rule_ref=int(combined.group(2)),
-                )
-            )
+        parsed = _parse_window(forward=forward, backward=backward)
+        if parsed is None:
             continue
 
-        decision_match = _ANCHORED_DECISION_RE.search(forward) or _DECISION_RE.search(forward)
-        rule_match = None
-
-        if decision_match is None:
-            backward = text[max(0, index - _WINDOW_BEFORE) : index]
-            decision_match = _ANCHORED_DECISION_RE.search(backward) or _DECISION_RE.search(backward)
-            rule_match = _RULE_RE.search(backward)
-
-        if decision_match is None:
-            continue
-
-        if rule_match is None:
-            rule_match = _closest_rule_match(
-                forward, decision_match.start(), decision_match.end()
-            ) or _RULE_RE.search(forward)
-
+        decision, rule_ref = parsed
         results.append(
-            ParsedDecision(
-                instrument_id=instrument_id,
-                decision=decision_match.group(1).upper(),
-                rule_ref=int(rule_match.group(1)) if rule_match else None,
-            )
+            ParsedDecision(instrument_id=instrument_id, decision=decision, rule_ref=rule_ref)
         )
 
     return results

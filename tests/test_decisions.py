@@ -90,3 +90,16 @@ class TestParseDecisions:
         result = parse_decisions(text, KNOWN_IDS)[0]
         assert result.decision == "ESCALATE"
         assert result.rule_ref == 1
+
+    def test_single_instrument_answer_parsed_even_without_ticker_mention(self):
+        text = "**Decision: ESCALATE (Rule 3)** - price stale for 3 business days."
+        results = parse_decisions(text, ["GLEN.L"])
+        assert len(results) == 1
+        assert results[0].instrument_id == "GLEN.L"
+        assert results[0].decision == "ESCALATE"
+        assert results[0].rule_ref == 3
+
+    def test_multi_instrument_answer_skips_when_ticker_missing(self):
+        text = "Decision: ESCALATE (Rule 3) - price stale for 3 business days."
+        results = parse_decisions(text, ["GLEN.L", "AAPL.OQ"])
+        assert results == []

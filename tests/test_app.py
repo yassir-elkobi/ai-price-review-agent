@@ -314,6 +314,18 @@ class TestExtractTrace:
         assert "part1" in final
         assert "part2" in final
 
+    def test_thinking_blocks_are_skipped(self):
+        message = _make_ai_message(
+            content=[
+                {"type": "thinking", "thinking": "internal reasoning", "signature": "abc123"},
+                {"type": "text", "text": "APPROVED"},
+            ]
+        )
+        final, _ = extract_trace([message])
+        assert final == "APPROVED"
+        assert "signature" not in final
+        assert "internal reasoning" not in final
+
 
 class TestGlobalExceptionHandler:
     """Any unhandled exception is converted to a JSON 500 response."""

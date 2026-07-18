@@ -1,3 +1,16 @@
+_NON_TEXT_BLOCK_TYPES = {"thinking", "redacted_thinking", "tool_use", "server_tool_use"}
+
+
+def _extract_text(part) -> str:
+    if isinstance(part, str):
+        return part
+    if isinstance(part, dict):
+        if part.get("type") in _NON_TEXT_BLOCK_TYPES:
+            return ""
+        return part.get("text", "")
+    return ""
+
+
 def extract_trace(messages) -> tuple[str, list[dict]]:
     steps: list[dict] = []
     final_answer = ""
@@ -15,10 +28,7 @@ def extract_trace(messages) -> tuple[str, list[dict]]:
                 )
             content = getattr(message, "content", "")
             if isinstance(content, list):
-                content = " ".join(
-                    str(part.get("text", part)) if isinstance(part, dict) else str(part)
-                    for part in content
-                )
+                content = " ".join(_extract_text(part) for part in content).strip()
             if content:
                 final_answer = content
         elif mtype == "tool":

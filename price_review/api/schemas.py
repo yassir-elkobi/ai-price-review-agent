@@ -23,3 +23,9 @@ class SecurityToggleRequest(BaseModel):
     """Request body for POST /security."""
 
     enabled: bool
+
+
+class MarketContextRequest(BaseModel):
+    """Request body for POST /market-context."""
+
+    content: str

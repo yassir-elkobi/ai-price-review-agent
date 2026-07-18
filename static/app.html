@@ -156,6 +156,19 @@
                 <p class="hint">Désactivez pour rejouer l'agent non protégé face à une injection de prompt (ex. dans <code>market_context.json</code>) : sans le filtre, l'agent peut suivre l'instruction cachée au lieu de l'ignorer.</p>
             </div>
         </div>
+        <div class="card">
+            <div class="card-head"><h2>market_context.json (démo d'injection)</h2></div>
+            <div class="pad">
+                <textarea class="rules-text" id="marketContext" spellcheck="false"></textarea>
+                <div class="rules-actions">
+                    <button class="ghost" id="injectExample">Insérer un exemple d'injection</button>
+                    <button class="ghost" id="saveMarketContext">Enregistrer</button>
+                    <button class="ghost" id="resetMarketContext">Réinitialiser</button>
+                    <span class="saved" id="marketContextSaved"></span>
+                </div>
+            </div>
+            <div class="hint">Éditez en live pour tester le SecurityLayer : ajoutez une instruction cachée dans un événement, enregistrez, puis relancez une revue sur cet instrument (protégé vs non protégé). "Réinitialiser" restaure les fixtures de démo.</div>
+        </div>
         <div class="card" id="securityEventsCard">
             <div class="card-head"><h2>Journal des tentatives détectées</h2></div>
             <div class="pad" id="securityEventsBody">

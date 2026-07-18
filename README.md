@@ -103,10 +103,12 @@ Scored globally, per rule, and per asset class.
 incoming user query and every tool output (market context, decision history,
 sector graph) for known injection patterns, redacting suspicious content and
 forcing an escalation instead of letting it steer a decision. Toggle it live
-via `GET/POST /security` or the "Sécurité" tab - with it off, an
-injected instruction (e.g. edited into `data/market_context.json`) can steer
-the unprotected agent. See `docs/MAESTRO.md` for the full layer-by-layer risk
-analysis.
+via `GET/POST /security` or the "Sécurité" tab - with it off, an injected
+instruction can steer the unprotected agent. The same tab has a live editor
+for `data/market_context.json` (`GET/POST /market-context`, plus
+`POST /market-context/reset`) so an injected headline can be planted and
+removed without touching the file system. See `docs/MAESTRO.md` for the full
+layer-by-layer risk analysis.
 
 ## Docker
 

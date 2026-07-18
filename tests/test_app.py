@@ -119,6 +119,47 @@ class TestRules:
         assert rules_file.read_text(encoding="utf-8") == "new rule"
 
 
+class TestMarketContext:
+    """GET/POST /market-context and /market-context/reset drive the injection demo."""
+
+    def test_get_returns_content_and_default(self, client, tmp_path, monkeypatch):
+        context_file = tmp_path / "market_context.json"
+        context_file.write_text('{"AAPL.OQ": []}', encoding="utf-8")
+        monkeypatch.setattr("price_review.paths.DESK_CONTEXT_PATH", context_file)
+        response = client.get("/market-context")
+        assert response.status_code == 200
+        body = response.json()
+        assert body["content"] == '{"AAPL.OQ": []}'
+        assert "default" in body
+
+    def test_post_saves_valid_json_and_clears_cache(self, client, tmp_path, monkeypatch):
+        context_file = tmp_path / "market_context.json"
+        context_file.write_text('{"AAPL.OQ": []}', encoding="utf-8")
+        monkeypatch.setattr("price_review.paths.DESK_CONTEXT_PATH", context_file)
+        with patch("price_review.api.app.clear_market_context_cache") as mock_clear:
+            response = client.post("/market-context", json={"content": '{"NVDA.OQ": []}'})
+        assert response.status_code == 200
+        assert response.json()["status"] == "saved"
+        assert context_file.read_text(encoding="utf-8") == '{"NVDA.OQ": []}'
+        mock_clear.assert_called_once()
+
+    def test_post_rejects_invalid_json(self, client, tmp_path, monkeypatch):
+        context_file = tmp_path / "market_context.json"
+        context_file.write_text('{"AAPL.OQ": []}', encoding="utf-8")
+        monkeypatch.setattr("price_review.paths.DESK_CONTEXT_PATH", context_file)
+        response = client.post("/market-context", json={"content": "{not json"})
+        assert response.status_code == 400
+        assert context_file.read_text(encoding="utf-8") == '{"AAPL.OQ": []}'
+
+    def test_reset_restores_default_content(self, client, tmp_path, monkeypatch):
+        context_file = tmp_path / "market_context.json"
+        context_file.write_text('{"NVDA.OQ": [{"headline": "injected"}]}', encoding="utf-8")
+        monkeypatch.setattr("price_review.paths.DESK_CONTEXT_PATH", context_file)
+        response = client.post("/market-context/reset")
+        assert response.status_code == 200
+        assert context_file.read_text(encoding="utf-8") == api._DEFAULT_MARKET_CONTEXT
+
+
 class TestValidate:
     """POST /validate: happy path, failures, and prompt-injection blocking."""
 

@@ -1,3 +1,4 @@
+import json
 import logging
 
 from fastapi import FastAPI, Request
@@ -10,6 +11,7 @@ from price_review.agent.llm import format_llm_error
 from price_review.api.logging_setup import setup_logging
 from price_review.api.schemas import (
     BookRequest,
+    MarketContextRequest,
     RulesRequest,
     SecurityToggleRequest,
     ValidateRequest,
@@ -18,6 +20,7 @@ from price_review.api.trace import extract_trace
 from price_review.config import get_settings
 from price_review.decisions import parse_decisions
 from price_review.evaluation import run_all_scenarios
+from price_review.market.context import clear_market_context_cache
 from price_review.memory import record_decision
 from price_review.orchestration import run_book_review
 from price_review.scenarios import load_scenarios
@@ -71,6 +74,27 @@ def _write_rules(content: str) -> None:
         raise
 
 
+def _read_market_context() -> str:
+    try:
+        return paths.DESK_CONTEXT_PATH.read_text(encoding="utf-8")
+    except OSError as exc:
+        logger.error("Failed to read market context from %s: %s", paths.DESK_CONTEXT_PATH, exc)
+        raise
+
+
+def _write_market_context(content: str) -> None:
+    json.loads(content)  # reject invalid JSON before touching the file
+    try:
+        paths.DESK_CONTEXT_PATH.write_text(content, encoding="utf-8")
+    except OSError as exc:
+        logger.error("Failed to write market context to %s: %s", paths.DESK_CONTEXT_PATH, exc)
+        raise
+    clear_market_context_cache()
+
+
+_DEFAULT_MARKET_CONTEXT = _read_market_context()
+
+
 @app.get("/", response_class=HTMLResponse)
 def index():
     try:
@@ -107,6 +131,28 @@ def write_rules(req: RulesRequest):
     _write_rules(req.rules)
     logger.info("Rules updated.")
     return {"status": "saved"}
+
+
+@app.get("/market-context")
+def read_market_context():
+    return {"content": _read_market_context(), "default": _DEFAULT_MARKET_CONTEXT}
+
+
+@app.post("/market-context")
+def write_market_context(req: MarketContextRequest):
+    try:
+        _write_market_context(req.content)
+    except (OSError, json.JSONDecodeError) as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
+    logger.info("Market context fixtures updated.")
+    return {"status": "saved"}
+
+
+@app.post("/market-context/reset")
+def reset_market_context():
+    _write_market_context(_DEFAULT_MARKET_CONTEXT)
+    logger.info("Market context fixtures reset to defaults.")
+    return {"status": "reset", "content": _DEFAULT_MARKET_CONTEXT}
 
 
 def _record_decisions(final_answer: str) -> None:

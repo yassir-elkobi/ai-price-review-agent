@@ -38,3 +38,34 @@ class TestParseDecisions:
         text = "aapl.oq -> approved (rule 1)"
         result = parse_decisions(text, KNOWN_IDS)[0]
         assert result.decision == "APPROVED"
+
+    def test_parses_decision_far_from_instrument_mention(self):
+        text = (
+            "## AAPL.OQ Validation Result\n\n"
+            "**Data:**\n- Daily change: -6.18%\n- Divergence: -0.1%\n- Staleness: 0 days\n\n"
+            "**Rule Assessment:**\n"
+            "- Rule 1: move exceeds the threshold, checked market context for a "
+            "justifying event, found a high-impact earnings report explaining it.\n"
+            "- Rule 4: divergence is negligible, no issue.\n"
+            "- Rule 3: price is fresh, no issue.\n\n"
+            "**Decision: APPROVED (Rule 1)**\nRationale: justified by a direct event."
+        )
+        results = parse_decisions(text, KNOWN_IDS)
+        assert len(results) == 1
+        assert results[0].decision == "APPROVED"
+        assert results[0].rule_ref == 1
+
+    def test_multi_instrument_table_does_not_bleed_across_rows(self):
+        text = "| AAPL.OQ | +1.2% | APPROVED | Rule 1 |\n| NVDA.OQ | +7.2% | ESCALATE | Rule 1 |"
+        results = {item.instrument_id: item for item in parse_decisions(text, KNOWN_IDS)}
+        assert results["AAPL.OQ"].decision == "APPROVED"
+        assert results["NVDA.OQ"].decision == "ESCALATE"
+
+    def test_rule_number_prefers_proximity_to_decision(self):
+        text = (
+            "AAPL.OQ analysis: Rule 4 divergence is fine, Rule 3 staleness is fine, "
+            "final call is Decision: APPROVED (Rule 1)."
+        )
+        result = parse_decisions(text, KNOWN_IDS)[0]
+        assert result.decision == "APPROVED"
+        assert result.rule_ref == 1

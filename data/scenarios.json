@@ -97,7 +97,7 @@
       "teaching_note": "Demo moment: change BOTH '5%' occurrences in rule 1 to '10%' (the normal threshold AND the 'above X%' threshold), save, re-run - decision flips to APPROVED without code changes.",
       "teaching_note_fr": "Moment clé : remplacez les DEUX occurrences de « 5 % » dans la règle 1 par « 10 % » (le seuil normal ET le seuil « au-dessus de X % »), enregistrez, relancez - APPROVED sans changer le code.",
       "live_flip_hint": "In desk rules, rule 1 has two '5%' values in the same sentence - change both to '10%' (not just one), save, and re-run this query.",
-      "live_flip_hint_fr": "Dans les règles desk, la règle 1 contient deux valeurs « 5 % » dans la même phrase - remplacez les deux par « 10 % » (pas une seule), enregistrez et relancez.",
+      "live_flip_hint_fr": "Dans les règles desk, la règle 1 contient deux valeurs « 5 % » dans la même phrase, remplacez les deux par « 10 % », enregistrez et relancez.",
       "featured": true
     }
   ]

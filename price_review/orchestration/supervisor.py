@@ -12,7 +12,7 @@ from langgraph.types import Send
 
 from price_review.agent.builder import SYSTEM_PROMPT
 from price_review.agent.llm import build_llm
-from price_review.api.trace import extract_trace
+from price_review.api.trace import content_to_text, extract_trace
 from price_review.prices import group_instruments_by_asset_class
 from price_review.tools import TOOLS
 
@@ -86,7 +86,7 @@ def _synthesis(state: BookState) -> dict:
             "anything - only summarize what each desk already decided.\n\n" + digest
         )
         response = llm.invoke(prompt)
-        report = getattr(response, "content", None) or fallback
+        report = content_to_text(getattr(response, "content", None)) or fallback
     except Exception as exc:  # noqa: BLE001 - synthesis is a summary, never fatal to the review
         logger.warning("Synthesis LLM call failed, falling back to raw concatenation: %s", exc)
         report = fallback

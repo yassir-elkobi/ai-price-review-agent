@@ -1,4 +1,8 @@
-from price_review.orchestration.supervisor import group_instruments_by_asset_class, run_book_review
+from price_review.orchestration.supervisor import (
+    _synthesis,
+    group_instruments_by_asset_class,
+    run_book_review,
+)
 
 
 class TestGrouping:
@@ -44,3 +48,36 @@ class TestRunBookReview:
         result = run_book_review(["UNKNOWN.XX"])
         assert result["branches"] == []
         assert "No instruments matched" in result["report"]
+
+
+class TestSynthesis:
+    """Synthesis flattens list-shaped LLM content (e.g. Claude thinking blocks) to text."""
+
+    def test_list_content_response_is_flattened_to_text(self, monkeypatch):
+        class FakeResponse:
+            content = [
+                {"type": "thinking", "thinking": "internal reasoning", "signature": "abc"},
+                {"type": "text", "text": "Book synthesis: 1 APPROVED, 0 ESCALATE."},
+            ]
+
+        class FakeLlm:
+            def invoke(self, prompt):
+                return FakeResponse()
+
+        monkeypatch.setattr("price_review.orchestration.supervisor.build_llm", lambda: FakeLlm())
+
+        state = {
+            "branch_results": [
+                {
+                    "asset_class": "Equity",
+                    "instrument_ids": ["AAPL.OQ"],
+                    "final_answer": "AAPL.OQ -> APPROVED (rule 1)",
+                    "steps": [],
+                }
+            ]
+        }
+        result = _synthesis(state)
+
+        assert result["report"] == "Book synthesis: 1 APPROVED, 0 ESCALATE."
+        assert "signature" not in result["report"]
+        assert isinstance(result["report"], str)

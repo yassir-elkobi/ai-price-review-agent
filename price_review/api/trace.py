@@ -11,6 +11,14 @@ def _extract_text(part) -> str:
     return ""
 
 
+def content_to_text(content) -> str:
+    if isinstance(content, list):
+        return " ".join(_extract_text(part) for part in content).strip()
+    if isinstance(content, str):
+        return content
+    return str(content) if content else ""
+
+
 def extract_trace(messages) -> tuple[str, list[dict]]:
     steps: list[dict] = []
     final_answer = ""
@@ -26,9 +34,7 @@ def extract_trace(messages) -> tuple[str, list[dict]]:
                         "args": tool_call.get("args", {}),
                     }
                 )
-            content = getattr(message, "content", "")
-            if isinstance(content, list):
-                content = " ".join(_extract_text(part) for part in content).strip()
+            content = content_to_text(getattr(message, "content", ""))
             if content:
                 final_answer = content
         elif mtype == "tool":

@@ -80,3 +80,13 @@ class TestParseDecisions:
         result = parse_decisions(text, KNOWN_IDS)[0]
         assert result.decision == "ESCALATE"
         assert result.rule_ref == 5
+
+    def test_atomic_decision_rule_line_wins_over_nearer_unrelated_rule_mentions(self):
+        text = (
+            "NVDA.OQ: | Divergence | 0.23% (rule 4 OK) |\n"
+            "Reasoning: no direct event, only indirect sector context.\n"
+            "Decision: ESCALATE (Rule 1)."
+        )
+        result = parse_decisions(text, KNOWN_IDS)[0]
+        assert result.decision == "ESCALATE"
+        assert result.rule_ref == 1

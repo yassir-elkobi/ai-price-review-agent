@@ -10,12 +10,19 @@ import re
 from pydantic import BaseModel
 
 _DECISION_RE = re.compile(r"\b(APPROVED|REJECTED|ESCALATE)\b", re.IGNORECASE)
+_RULE_RE = re.compile(r"rule\s*#?\s*(\d)", re.IGNORECASE)
+
+_ANCHORED_DECISION_WITH_RULE_RE = re.compile(
+    r"decision\s*:?\s*[^a-zA-Z]{0,10}(APPROVED|REJECTED|ESCALATE)\b"
+    r"[^\n]{0,40}?rule\s*#?\s*(\d)",
+    re.IGNORECASE,
+)
 _ANCHORED_DECISION_RE = re.compile(
     r"decision\s*:?\s*[^a-zA-Z]{0,10}(APPROVED|REJECTED|ESCALATE)\b", re.IGNORECASE
 )
-_RULE_RE = re.compile(r"rule\s*#?\s*(\d)", re.IGNORECASE)
+
 _WINDOW_BEFORE = 15
-_RULE_PROXIMITY = 60
+_RULE_PROXIMITY = 150
 
 
 class ParsedDecision(BaseModel):
@@ -24,6 +31,17 @@ class ParsedDecision(BaseModel):
     instrument_id: str
     decision: str
     rule_ref: int | None = None
+
+
+def _closest_rule_match(text: str, anchor_start: int, anchor_end: int) -> re.Match | None:
+    """Return the rule mention nearest to the decision keyword, in either direction."""
+    anchor = (anchor_start + anchor_end) / 2
+    window_start = max(0, anchor_start - _RULE_PROXIMITY)
+    window_end = anchor_end + _RULE_PROXIMITY
+    candidates = list(_RULE_RE.finditer(text, window_start, window_end))
+    if not candidates:
+        return None
+    return min(candidates, key=lambda m: abs((m.start() + m.end()) / 2 - anchor))
 
 
 def parse_decisions(text: str, known_instrument_ids: list[str]) -> list[ParsedDecision]:
@@ -50,6 +68,18 @@ def parse_decisions(text: str, known_instrument_ids: list[str]) -> list[ParsedDe
                 boundary = min(boundary, pos)
 
         forward = text[end:boundary]
+
+        combined = _ANCHORED_DECISION_WITH_RULE_RE.search(forward)
+        if combined is not None:
+            results.append(
+                ParsedDecision(
+                    instrument_id=instrument_id,
+                    decision=combined.group(1).upper(),
+                    rule_ref=int(combined.group(2)),
+                )
+            )
+            continue
+
         decision_match = _ANCHORED_DECISION_RE.search(forward) or _DECISION_RE.search(forward)
         rule_match = None
 
@@ -62,10 +92,9 @@ def parse_decisions(text: str, known_instrument_ids: list[str]) -> list[ParsedDe
             continue
 
         if rule_match is None:
-            near_decision = forward[
-                max(0, decision_match.start() - 10) : decision_match.end() + _RULE_PROXIMITY
-            ]
-            rule_match = _RULE_RE.search(near_decision) or _RULE_RE.search(forward)
+            rule_match = _closest_rule_match(
+                forward, decision_match.start(), decision_match.end()
+            ) or _RULE_RE.search(forward)
 
         results.append(
             ParsedDecision(

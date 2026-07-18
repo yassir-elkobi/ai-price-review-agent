@@ -69,3 +69,14 @@ class TestParseDecisions:
         result = parse_decisions(text, KNOWN_IDS)[0]
         assert result.decision == "APPROVED"
         assert result.rule_ref == 1
+
+    def test_final_decision_label_overrides_earlier_candidate_verdicts(self):
+        text = (
+            "XS1234567890: Rule 2 (Bonds): move exceeds threshold, no credit event "
+            "-> would point to REJECTED. Rule 4 (Divergence): exceeds threshold "
+            "-> would point to ESCALATE. Rule 5: conflicting rules, never decide "
+            "alone. Decision: ESCALATE (Rule 5)."
+        )
+        result = parse_decisions(text, KNOWN_IDS)[0]
+        assert result.decision == "ESCALATE"
+        assert result.rule_ref == 5

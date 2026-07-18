@@ -10,6 +10,9 @@ import re
 from pydantic import BaseModel
 
 _DECISION_RE = re.compile(r"\b(APPROVED|REJECTED|ESCALATE)\b", re.IGNORECASE)
+_ANCHORED_DECISION_RE = re.compile(
+    r"decision\s*:?\s*[^a-zA-Z]{0,10}(APPROVED|REJECTED|ESCALATE)\b", re.IGNORECASE
+)
 _RULE_RE = re.compile(r"rule\s*#?\s*(\d)", re.IGNORECASE)
 _WINDOW_BEFORE = 15
 _RULE_PROXIMITY = 60
@@ -47,12 +50,12 @@ def parse_decisions(text: str, known_instrument_ids: list[str]) -> list[ParsedDe
                 boundary = min(boundary, pos)
 
         forward = text[end:boundary]
-        decision_match = _DECISION_RE.search(forward)
+        decision_match = _ANCHORED_DECISION_RE.search(forward) or _DECISION_RE.search(forward)
         rule_match = None
 
         if decision_match is None:
             backward = text[max(0, index - _WINDOW_BEFORE) : index]
-            decision_match = _DECISION_RE.search(backward)
+            decision_match = _ANCHORED_DECISION_RE.search(backward) or _DECISION_RE.search(backward)
             rule_match = _RULE_RE.search(backward)
 
         if decision_match is None:

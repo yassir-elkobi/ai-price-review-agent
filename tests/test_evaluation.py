@@ -7,7 +7,7 @@ EXPECTED = {
     "AAPL.OQ": ("APPROVED", 1),
     "EURUSD": ("APPROVED", 1),
     "TSLA.OQ": ("APPROVED", 1),
-    "XS1234567890": ("REJECTED", 2),
+    "XS1234567890": ("ESCALATE", 5),
     "GLEN.L": ("ESCALATE", 3),
     "NVDA.OQ": ("ESCALATE", 1),
 }
@@ -108,7 +108,7 @@ class TestRunAllScenarios:
 
     def test_score_by_rule_present(self):
         report = run_all_scenarios(_perfect_agent())
-        assert set(report.score_by_rule) == {"rule_1", "rule_2", "rule_3"}
+        assert set(report.score_by_rule) == {"rule_1", "rule_3", "rule_5"}
 
     def test_score_by_asset_class_present(self):
         report = run_all_scenarios(_perfect_agent())

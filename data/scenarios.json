@@ -50,10 +50,10 @@
       "query": "Validate the bond XS1234567890.",
       "instrument_ids": ["XS1234567890"],
       "expected_outcomes": [
-        {"instrument_id": "XS1234567890", "decision": "REJECTED", "rule_ref": 2}
+        {"instrument_id": "XS1234567890", "decision": "ESCALATE", "rule_ref": 5}
       ],
-      "teaching_note": "+8.4% on a bond with no credit or rates event - REJECTED by rule 2.",
-      "teaching_note_fr": "+8,4 % sur une obligation sans événement crédit ou taux - REJECTED (règle 2).",
+      "teaching_note": "+8.4% on a bond with no credit event (rule 2) AND 8.2% divergence vs reference (rule 4) - two rules conflict, so rule 5 forces ESCALATE instead of a unilateral REJECTED.",
+      "teaching_note_fr": "+8,4 % sur une obligation sans événement crédit (règle 2) ET 8,2 % de divergence vs référence (règle 4) - deux règles se contredisent, la règle 5 impose ESCALATE plutôt qu'un REJECTED unilatéral.",
       "featured": true
     },
     {

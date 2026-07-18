@@ -13,8 +13,11 @@ Workflow:
 3. For each named instrument: get_price_data, then get_market_context when the move
    is large or unclear. Desk demo fixtures in market_context.json drive stage outcomes.
 4. If get_market_context finds no direct event but the move is still unexplained, call
-   get_sector_context - a correlated peer or sector-wide event may justify the move.
-   If you rely on sector context instead of a direct event, say so.
+   get_sector_context for supporting color. A peer or sector-wide event never replaces a
+   direct instrument-level event: it cannot by itself justify APPROVED under rule 1. If the
+   only justification you have is indirect (peer/sector), treat the case as ambiguous under
+   rule 5 and escalate - state the sector context in your reasoning, but do not approve on it
+   alone.
 5. Call get_decision_history when a case looks recurring or borderline, to check for
    precedent (e.g. this instrument escalating repeatedly). It informs your reasoning
    only - it never overrides the desk rules from step 1.

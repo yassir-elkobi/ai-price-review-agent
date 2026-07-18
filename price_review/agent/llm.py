@@ -16,7 +16,6 @@ def build_llm(settings: Settings | None = None) -> BaseChatModel:
 
     return ChatAnthropic(
         model=model,
-        temperature=0,
         max_retries=2,
         api_key=settings.anthropic_api_key.get_secret_value(),
     )

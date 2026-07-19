@@ -1,4 +1,14 @@
 const $ = (selector) => document.querySelector(selector);
+
+function on(selector, event, handler) {
+    const el = $(selector);
+    if (!el) {
+        console.warn(`[app.js] element not found for binding: ${selector}`);
+        return;
+    }
+    el.addEventListener(event, handler);
+}
+
 const presetBox = $("#presets");
 const scenarioNote = $("#scenarioNote");
 let scenarios = [];
@@ -411,15 +421,16 @@ async function toggleSecurity() {
     }
 }
 
-$("#go").onclick = runReview;
-$("#saveRules").onclick = saveRules;
-$("#goBook").onclick = runBookReview;
-$("#goEval").onclick = runEvaluation;
-$("#securityToggle").onchange = toggleSecurity;
-$("#saveMarketContext").onclick = saveMarketContext;
-$("#resetMarketContext").onclick = resetMarketContext;
-$("#injectExampleDirect").onclick = () => injectExample("direct");
-$("#injectExampleSocial").onclick = () => injectExample("social");
+on("#go", "click", runReview);
+on("#saveRules", "click", saveRules);
+on("#goBook", "click", runBookReview);
+on("#goEval", "click", runEvaluation);
+on("#securityToggle", "change", toggleSecurity);
+on("#saveMarketContext", "click", saveMarketContext);
+on("#resetMarketContext", "click", resetMarketContext);
+on("#injectExampleDirect", "click", () => injectExample("direct"));
+on("#injectExampleSocial", "click", () => injectExample("social"));
+
 loadScenarios();
 loadRules();
 loadSecurityStatus();

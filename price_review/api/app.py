@@ -95,13 +95,29 @@ def _write_market_context(content: str) -> None:
 _DEFAULT_MARKET_CONTEXT = _read_market_context()
 
 
+def _static_asset_version() -> int:
+    try:
+        return int(
+            max(
+                (paths.STATIC_DIR / "js" / "app.js").stat().st_mtime,
+                (paths.STATIC_DIR / "css" / "app.css").stat().st_mtime,
+            )
+        )
+    except OSError:
+        return 0
+
+
 @app.get("/", response_class=HTMLResponse)
 def index():
     try:
-        return (paths.STATIC_DIR / "app.html").read_text(encoding="utf-8")
+        html = (paths.STATIC_DIR / "app.html").read_text(encoding="utf-8")
     except OSError as exc:
         logger.error("Failed to read app.html: %s", exc)
         return HTMLResponse("UI unavailable.", status_code=500)
+    version = _static_asset_version()
+    html = html.replace('/static/js/app.js"', f'/static/js/app.js?v={version}"')
+    html = html.replace('/static/css/app.css"', f'/static/css/app.css?v={version}"')
+    return html
 
 
 @app.get("/health")

@@ -97,6 +97,11 @@ class TestIndex:
         assert response.status_code == 200
         assert "text/html" in response.headers["content-type"]
 
+    def test_static_assets_are_cache_busted(self, client):
+        html = client.get("/").text
+        assert "/static/js/app.js?v=" in html
+        assert "/static/css/app.css?v=" in html
+
 
 class TestRules:
     """GET/POST /rules reads and writes the runtime-editable rules file."""

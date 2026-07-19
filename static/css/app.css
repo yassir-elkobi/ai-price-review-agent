@@ -600,6 +600,22 @@ button.ghost:hover {
     background: var(--purple-wash);
 }
 
+.select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: var(--sans);
+    cursor: pointer;
+}
+
+.select:focus {
+    outline: none;
+    border-color: var(--purple-light);
+}
+
 .hint {
     font-size: 12px;
     color: var(--muted);

@@ -35,8 +35,12 @@ _INJECTION_PATTERNS = [
         r"this\s+is\s+a\s+test,?\s+ignore",
         r"</?(system|instructions)>",
         r"(already|pre[- ]?)(\s+\w+){0,2}\s+(reviewed|cleared|approved)\b",
+        r"pre[-\s]?approved\b",
         r"no\s+(further\s+)?(escalation|review)\s+(is\s+)?needed",
         r"approve\s+as\s+normal",
+        r"<!--[\s\S]*?-->",
+        r"do\s+not\s+(call\s+)?escalate",
+        r"without\s+triggering\s+the\s+(human\s+)?queue",
     ]
 ]
 

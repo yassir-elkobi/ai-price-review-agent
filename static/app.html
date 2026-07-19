@@ -161,14 +161,20 @@
             <div class="pad">
                 <textarea class="rules-text" id="marketContext" spellcheck="false"></textarea>
                 <div class="rules-actions">
-                    <button class="ghost" id="injectExampleDirect">Exemple direct ("ignore instructions")</button>
-                    <button class="ghost" id="injectExampleSocial">Exemple social engineering ("pré-approuvé")</button>
+                    <select class="select" id="injectionExampleSelect">
+                        <option value="direct">1. Direct - "ignore previous instructions"</option>
+                        <option value="social">2. Social engineering - note interne "pré-approuvé"</option>
+                        <option value="role">3. Détournement de rôle - "you are now..."</option>
+                        <option value="hidden">4. Instruction cachée - commentaire HTML dans une vraie news</option>
+                        <option value="suppress">5. Suppression d'escalade - "do not call escalate_to_human"</option>
+                    </select>
+                    <button class="ghost" id="injectExample">Insérer l'exemple</button>
                     <button class="ghost" id="saveMarketContext">Enregistrer</button>
                     <button class="ghost" id="resetMarketContext">Réinitialiser</button>
                     <span class="saved" id="marketContextSaved"></span>
                 </div>
             </div>
-            <div class="hint">Éditez en live pour tester le SecurityLayer : ajoutez une instruction cachée dans un événement, enregistrez, puis relancez une revue sur cet instrument (protégé vs non protégé). L'exemple direct est presque toujours résisté par le modèle même non protégé (bon rappel de defense-in-depth) ; l'exemple social engineering imite une note interne légitime et a plus de chance de tromper l'agent non protégé. "Réinitialiser" restaure les fixtures de démo.</div>
+            <div class="hint">Éditez en live pour tester le SecurityLayer : choisissez un exemple, insérez-le sur NVDA.OQ, enregistrez, puis relancez une revue sur cet instrument (protégé vs non protégé). Les exemples 1 et 3 utilisent un langage de commande explicite, presque toujours résisté par le modèle même non protégé. Les exemples 2, 4 et 5 imitent du contenu légitime (note interne, commentaire technique, consigne de conformité) et ont plus de chance de tromper l'agent non protégé - l'exemple 5 est le plus insidieux : il ne cherche pas à changer la décision mais à supprimer l'appel à <code>escalate_to_human</code>, donc la trace d'audit elle-même. "Réinitialiser" restaure les fixtures de démo.</div>
         </div>
         <div class="card" id="securityEventsCard">
             <div class="card-head"><h2>Journal des tentatives détectées</h2></div>

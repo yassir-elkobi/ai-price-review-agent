@@ -161,13 +161,14 @@
             <div class="pad">
                 <textarea class="rules-text" id="marketContext" spellcheck="false"></textarea>
                 <div class="rules-actions">
-                    <button class="ghost" id="injectExample">Insérer un exemple d'injection</button>
+                    <button class="ghost" id="injectExampleDirect">Exemple direct ("ignore instructions")</button>
+                    <button class="ghost" id="injectExampleSocial">Exemple social engineering ("pré-approuvé")</button>
                     <button class="ghost" id="saveMarketContext">Enregistrer</button>
                     <button class="ghost" id="resetMarketContext">Réinitialiser</button>
                     <span class="saved" id="marketContextSaved"></span>
                 </div>
             </div>
-            <div class="hint">Éditez en live pour tester le SecurityLayer : ajoutez une instruction cachée dans un événement, enregistrez, puis relancez une revue sur cet instrument (protégé vs non protégé). "Réinitialiser" restaure les fixtures de démo.</div>
+            <div class="hint">Éditez en live pour tester le SecurityLayer : ajoutez une instruction cachée dans un événement, enregistrez, puis relancez une revue sur cet instrument (protégé vs non protégé). L'exemple direct est presque toujours résisté par le modèle même non protégé (bon rappel de defense-in-depth) ; l'exemple social engineering imite une note interne légitime et a plus de chance de tromper l'agent non protégé. "Réinitialiser" restaure les fixtures de démo.</div>
         </div>
         <div class="card" id="securityEventsCard">
             <div class="card-head"><h2>Journal des tentatives détectées</h2></div>

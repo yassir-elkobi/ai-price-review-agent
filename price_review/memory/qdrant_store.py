@@ -52,6 +52,12 @@ def _ensure_collection(client, collection: str) -> None:
             collection_name=collection,
             vectors_config=qmodels.VectorParams(size=DIMENSIONS, distance=qmodels.Distance.COSINE),
         )
+
+    client.create_payload_index(
+        collection_name=collection,
+        field_name="instrument_id",
+        field_schema=qmodels.PayloadSchemaType.KEYWORD,
+    )
     _ready_collection = collection
 
 

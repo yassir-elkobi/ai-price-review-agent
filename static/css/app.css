@@ -19,6 +19,8 @@
     --rej-bg: #fdecea;
     --esc: #b45309;
     --esc-bg: #fef3c7;
+    --mem: #0f766e;
+    --mem-bg: #e6f6f4;
     --shadow: 0 1px 2px rgba(61, 68, 149, .06), 0 8px 24px rgba(61, 68, 149, .08);
     --radius: 14px;
     --sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -551,6 +553,20 @@ button.primary:disabled {
 .b-esc {
     background: var(--esc-bg);
     color: var(--esc);
+}
+
+.b-mem {
+    background: var(--mem-bg);
+    color: var(--mem);
+    font-family: var(--sans);
+}
+
+.step.memory-step {
+    border-left-color: var(--mem);
+}
+
+.step.memory-step .node {
+    border-color: var(--mem);
 }
 
 .rules-text {

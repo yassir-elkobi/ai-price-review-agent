@@ -83,6 +83,14 @@ function toolLabel(kind) {
     return kind === "call" ? "Call tool" : "Observe";
 }
 
+const MEMORY_TOOLS = new Set(["get_decision_history", "get_sector_context"]);
+
+function memoryBadge(tool) {
+    if (tool === "get_decision_history") return '<span class="badge b-mem">🧠 Qdrant RAG</span>';
+    if (tool === "get_sector_context") return '<span class="badge b-mem">🧠 GraphRAG</span>';
+    return "";
+}
+
 function badgeify(text) {
     return text
         .replace(/\bESCALATE\b/g, '<span class="badge b-esc">ESCALATE</span>')
@@ -102,17 +110,18 @@ async function renderSteps(steps) {
     box.innerHTML = "";
     for (const step of steps) {
         const element = document.createElement("div");
-        element.className = `step ${step.kind === "result" ? "result" : "call"}`;
+        const isMemory = MEMORY_TOOLS.has(step.tool);
+        element.className = `step ${step.kind === "result" ? "result" : "call"}${isMemory ? " memory-step" : ""}`;
         if (step.kind === "call") {
             const args = Object.keys(step.args || {}).length ? JSON.stringify(step.args) : "-";
             element.innerHTML = `<span class="node"></span>
-                <div class="label">${toolLabel(step.kind)}</div>
+                <div class="label">${toolLabel(step.kind)} ${isMemory ? memoryBadge(step.tool) : ""}</div>
                 <div class="tool">${step.tool}()</div>
                 <div class="args">args: ${args}</div>`;
         } else {
             const observation = (step.content || "").slice(0, 600);
             element.innerHTML = `<span class="node"></span>
-                <div class="label">${toolLabel(step.kind)} · ${step.tool}</div>
+                <div class="label">${toolLabel(step.kind)} · ${step.tool} ${isMemory ? memoryBadge(step.tool) : ""}</div>
                 <div class="obs">${observation.replace(/</g, "&lt;")}</div>`;
         }
         box.appendChild(element);

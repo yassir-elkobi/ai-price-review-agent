@@ -120,9 +120,8 @@ def get_decision_history(instrument_id: str) -> str:
     """Recall past desk decisions for ONE instrument (Qdrant RAG).
 
     WHEN TO CALL:
-    - When a move looks recurring, borderline, or you want precedent before
-      deciding (e.g. "has this instrument escalated before?").
-    - Not required for obviously normal moves inside every threshold.
+    - ALWAYS, right after get_price_data, for every instrument you review -
+      even an obviously normal move should be checked against precedent.
 
     instrument_id: same identifier as get_price_data.
 

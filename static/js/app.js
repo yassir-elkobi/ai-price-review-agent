@@ -141,6 +141,7 @@ async function runReview() {
         $("#verdictBody").className = `verdict-body ${verdictClass(answer)}`;
         $("#answer").classList.add("show");
         $("#status").textContent = `${data.steps?.length || 0} steps · done`;
+        loadSecurityStatus();
     } catch (error) {
         $("#trace").innerHTML = `<div class="tl-empty">Network error: ${error.message}</div>`;
         $("#status").textContent = "";
@@ -241,6 +242,9 @@ function switchTab(tabId) {
     document.querySelectorAll(".tab-panel").forEach((panel) => {
         panel.hidden = panel.dataset.panel !== tabId;
     });
+    if (tabId === "security") {
+        loadSecurityStatus();
+    }
 }
 
 document.querySelectorAll(".tab-btn").forEach((btn) => {
@@ -289,6 +293,7 @@ async function runBookReview() {
         $("#bookReportBody").innerHTML = badgeify((data.report || "").replace(/</g, "&lt;"));
         $("#bookReport").classList.add("show");
         $("#bookStatus").textContent = `${(data.branches || []).length} branches en parallèle · terminé`;
+        loadSecurityStatus();
     } catch (error) {
         $("#bookStatus").textContent = `Erreur réseau: ${error.message}`;
     } finally {

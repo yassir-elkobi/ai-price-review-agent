@@ -176,6 +176,16 @@
             </div>
             <div class="hint">Éditez en live pour tester le SecurityLayer : choisissez un exemple, insérez-le sur NVDA.OQ, enregistrez, puis relancez une revue sur cet instrument (protégé vs non protégé). Les exemples 1 et 3 utilisent un langage de commande explicite, presque toujours résisté par le modèle même non protégé. Les exemples 2, 4 et 5 imitent du contenu légitime (note interne, commentaire technique, consigne de conformité) et ont plus de chance de tromper l'agent non protégé - l'exemple 5 est le plus insidieux : il ne cherche pas à changer la décision mais à supprimer l'appel à <code>escalate_to_human</code>, donc la trace d'audit elle-même. "Réinitialiser" restaure les fixtures de démo.</div>
         </div>
+        <div class="card">
+            <div class="card-head"><h2>Mémoire (Qdrant decision history)</h2></div>
+            <div class="pad">
+                <p class="hint">Chaque revue réussie enregistre sa décision dans Qdrant ; <code>get_decision_history</code> la relit à chaque nouvelle revue du même instrument. Avant une démo live, videz l'historique pour le reconstruire à froid devant la salle plutôt que de montrer des tests accumulés.</p>
+                <div class="rules-actions">
+                    <button class="ghost" id="resetMemory">Réinitialiser l'historique</button>
+                    <span class="saved" id="resetMemorySaved"></span>
+                </div>
+            </div>
+        </div>
         <div class="card" id="securityEventsCard">
             <div class="card-head"><h2>Journal des tentatives détectées</h2></div>
             <div class="pad" id="securityEventsBody">

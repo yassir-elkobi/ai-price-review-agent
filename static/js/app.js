@@ -86,8 +86,8 @@ function toolLabel(kind) {
 const MEMORY_TOOLS = new Set(["get_decision_history", "get_sector_context"]);
 
 function memoryBadge(tool) {
-    if (tool === "get_decision_history") return '<span class="badge b-mem">🧠 Qdrant RAG</span>';
-    if (tool === "get_sector_context") return '<span class="badge b-mem">🧠 GraphRAG</span>';
+    if (tool === "get_decision_history") return '<span class="badge b-mem">Qdrant RAG</span>';
+    if (tool === "get_sector_context") return '<span class="badge b-mem">GraphRAG</span>';
     return "";
 }
 
@@ -230,6 +230,24 @@ async function resetMarketContext() {
         }, 2500);
     } catch {
         $("#marketContextSaved").textContent = "erreur";
+    }
+}
+
+async function resetMemory() {
+    $("#resetMemorySaved").textContent = "…";
+    try {
+        const response = await fetch("/memory/reset", {method: "POST"});
+        const data = await response.json();
+        if (data.error) {
+            $("#resetMemorySaved").textContent = `erreur: ${data.error}`;
+            return;
+        }
+        $("#resetMemorySaved").textContent = "historique vidé";
+        setTimeout(() => {
+            $("#resetMemorySaved").textContent = "";
+        }, 2500);
+    } catch {
+        $("#resetMemorySaved").textContent = "erreur";
     }
 }
 
@@ -448,6 +466,7 @@ on("#goEval", "click", runEvaluation);
 on("#securityToggle", "change", toggleSecurity);
 on("#saveMarketContext", "click", saveMarketContext);
 on("#resetMarketContext", "click", resetMarketContext);
+on("#resetMemory", "click", resetMemory);
 on("#injectExample", "click", injectExample);
 
 loadScenarios();

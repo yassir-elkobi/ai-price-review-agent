@@ -57,6 +57,20 @@ class TestQdrantStore:
         assert len(history) == 1
         assert history[0]["instrument_id"] == "AAPL.OQ"
 
+    def test_reset_wipes_all_history(self):
+        qdrant_store.record_decision("NVDA.OQ", "ESCALATE", rule_ref=1)
+        qdrant_store.reset_decision_history()
+        text = qdrant_store.get_decision_history_text("NVDA.OQ")
+        assert "No prior decision history" in text
+
+    def test_reset_then_record_is_queryable_again(self):
+        qdrant_store.record_decision("NVDA.OQ", "ESCALATE", rule_ref=1)
+        qdrant_store.reset_decision_history()
+        qdrant_store.record_decision("NVDA.OQ", "APPROVED", rule_ref=1)
+        history = qdrant_store.get_decision_history("NVDA.OQ")
+        assert len(history) == 1
+        assert history[0]["decision"] == "APPROVED"
+
 
 class TestGraphStore:
     """Sector GraphRAG local fallback: known/unknown instruments and text output."""

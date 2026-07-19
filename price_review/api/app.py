@@ -21,7 +21,7 @@ from price_review.config import get_settings
 from price_review.decisions import parse_decisions
 from price_review.evaluation import run_all_scenarios
 from price_review.market.context import clear_market_context_cache
-from price_review.memory import record_decision
+from price_review.memory import record_decision, reset_decision_history
 from price_review.orchestration import run_book_review
 from price_review.scenarios import load_scenarios
 from price_review.scenarios.loader import load_instrument_ids
@@ -169,6 +169,17 @@ def reset_market_context():
     _write_market_context(_DEFAULT_MARKET_CONTEXT)
     logger.info("Market context fixtures reset to defaults.")
     return {"status": "reset", "content": _DEFAULT_MARKET_CONTEXT}
+
+
+@app.post("/memory/reset")
+def reset_memory():
+    try:
+        reset_decision_history()
+    except Exception as exc:
+        logger.exception("Failed to reset decision history")
+        return JSONResponse(status_code=500, content={"error": str(exc)})
+    logger.info("Decision history memory wiped.")
+    return {"status": "reset"}
 
 
 def _record_decisions(final_answer: str) -> None:

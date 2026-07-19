@@ -69,6 +69,20 @@ def reset_memory_client() -> None:
         _ready_collection = None
 
 
+def reset_decision_history() -> None:
+    """Wipe all recorded decisions so a demo can rebuild history from a clean slate."""
+    global _ready_collection
+
+    settings = get_settings()
+    client = _get_client()
+    try:
+        client.delete_collection(collection_name=settings.qdrant_collection)
+    except Exception as exc:  # noqa: BLE001 - collection may not exist yet, that's fine
+        logger.warning("Failed to delete collection %s: %s", settings.qdrant_collection, exc)
+    with _lock:
+        _ready_collection = None
+
+
 def record_decision(
     instrument_id: str,
     decision: str,

@@ -165,6 +165,23 @@ class TestMarketContext:
         assert context_file.read_text(encoding="utf-8") == api._DEFAULT_MARKET_CONTEXT
 
 
+class TestMemoryReset:
+    """POST /memory/reset wipes Qdrant decision history for a clean demo slate."""
+
+    def test_reset_calls_store_and_returns_ok(self, client):
+        with patch("price_review.api.app.reset_decision_history") as mock_reset:
+            response = client.post("/memory/reset")
+        assert response.status_code == 200
+        assert response.json()["status"] == "reset"
+        mock_reset.assert_called_once()
+
+    def test_reset_failure_returns_500(self, client):
+        with patch("price_review.api.app.reset_decision_history", side_effect=RuntimeError("boom")):
+            response = client.post("/memory/reset")
+        assert response.status_code == 500
+        assert "boom" in response.json()["error"]
+
+
 class TestValidate:
     """POST /validate: happy path, failures, and prompt-injection blocking."""
 

@@ -79,7 +79,12 @@ static/                     UI (4 tabs: Revue solo, Book, Évaluation, Sécurit�
   `data/sector_graph.json` fixture otherwise. Answers "did a correlated peer
   or sector-wide event explain this move?" even with no direct news.
 - Every `/validate` call best-effort persists parsed decisions back into
-  Qdrant so later reviews can recall precedent.
+  Qdrant so later reviews can recall precedent. The agent always calls
+  `get_decision_history` per instrument (not just on borderline cases), so
+  the pattern is visible on every run instead of depending on model judgment.
+- `POST /memory/reset` wipes the Qdrant collection (button in the Sécurité
+  tab) so a demo can rebuild history from a clean slate instead of showing
+  whatever accumulated during testing.
 
 ## Multi-agent supervisor
 

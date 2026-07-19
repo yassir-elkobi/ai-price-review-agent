@@ -182,10 +182,20 @@ def reset_memory():
     return {"status": "reset"}
 
 
-def _record_decisions(final_answer: str) -> None:
+def _reviewed_instrument_ids(steps: list[dict]) -> list[str]:
+    ids: list[str] = []
+    for step in steps:
+        if step.get("kind") == "call" and step.get("tool") == "get_price_data":
+            instrument_id = (step.get("args") or {}).get("instrument_id")
+            if instrument_id and instrument_id not in ids:
+                ids.append(instrument_id)
+    return ids
+
+
+def _record_decisions(final_answer: str, steps: list[dict]) -> None:
     try:
-        known_ids = load_instrument_ids()
-        for parsed in parse_decisions(final_answer, list(known_ids)):
+        known_ids = _reviewed_instrument_ids(steps) or list(load_instrument_ids())
+        for parsed in parse_decisions(final_answer, known_ids):
             record_decision(parsed.instrument_id, parsed.decision, parsed.rule_ref)
     except Exception:  # noqa: BLE001 - memory persistence must never break a review
         logger.exception("Failed to record decision history for %s", final_answer[:60])
@@ -210,7 +220,7 @@ def validate(req: ValidateRequest):
         result = agent.invoke({"messages": [{"role": "user", "content": req.query}]})
         final_answer, steps = extract_trace(result["messages"])
         logger.info("Review completed (%d steps).", len(steps))
-        _record_decisions(final_answer)
+        _record_decisions(final_answer, steps)
         return {"final_answer": final_answer, "steps": steps}
     except Exception as exc:
         logger.exception("Agent invocation failed")

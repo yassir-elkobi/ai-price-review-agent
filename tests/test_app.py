@@ -182,6 +182,34 @@ class TestMemoryReset:
         assert "boom" in response.json()["error"]
 
 
+class TestRecordDecisions:
+    """_record_decisions scopes parsing to instruments actually reviewed this run."""
+
+    def test_reviewed_instrument_ids_from_get_price_data_calls(self):
+        steps = [
+            {"kind": "call", "tool": "get_validation_rules", "args": {}},
+            {"kind": "call", "tool": "get_price_data", "args": {"instrument_id": "NVDA.OQ"}},
+            {"kind": "result", "tool": "get_price_data", "content": "{}"},
+        ]
+        assert api._reviewed_instrument_ids(steps) == ["NVDA.OQ"]
+
+    def test_terse_answer_with_no_ticker_mention_still_records_single_instrument(self):
+        steps = [
+            {"kind": "call", "tool": "get_price_data", "args": {"instrument_id": "NVDA.OQ"}},
+        ]
+        with patch("price_review.api.app.record_decision") as mock_record:
+            api._record_decisions("Decision: ESCALATE (Rule 1)", steps)
+        mock_record.assert_called_once_with("NVDA.OQ", "ESCALATE", 1)
+
+    def test_falls_back_to_whole_book_when_no_price_data_calls(self):
+        with (
+            patch("price_review.api.app.load_instrument_ids", return_value=["AAPL.OQ"]),
+            patch("price_review.api.app.record_decision") as mock_record,
+        ):
+            api._record_decisions("AAPL.OQ -> APPROVED (rule 1)", [])
+        mock_record.assert_called_once_with("AAPL.OQ", "APPROVED", 1)
+
+
 class TestValidate:
     """POST /validate: happy path, failures, and prompt-injection blocking."""
 

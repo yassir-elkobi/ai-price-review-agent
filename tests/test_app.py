@@ -352,6 +352,13 @@ class TestEscalations:
         assert len(data) == 1
         assert data[0]["instrument_id"] == "AAPL.OQ"
 
+    def test_reset_clears_the_queue(self, client):
+        tools.escalate_to_human.invoke({"instrument_id": "AAPL.OQ", "reason": "Test"})
+        response = client.post("/escalations/reset")
+        assert response.status_code == 200
+        assert response.json() == {"status": "reset", "escalations": []}
+        assert client.get("/escalations").json()["escalations"] == []
+
 
 class TestScenarios:
     """GET /scenarios: listing, shape, and the featured filter."""

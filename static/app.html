@@ -186,6 +186,17 @@
                 </div>
             </div>
         </div>
+        <div class="card">
+            <div class="card-head"><h2>File d'escalades humaines (/escalations)</h2></div>
+            <div class="pad">
+                <p class="hint">Chaque décision ESCALATE appelle <code>escalate_to_human</code>, qui alimente cette file pour un futur validateur. Elle s'accumule pendant toute la durée de vie du process - videz-la avant une démo pour repartir d'une file propre.</p>
+                <div class="rules-actions">
+                    <button class="ghost" id="resetEscalations">Réinitialiser la file d'escalades</button>
+                    <span class="saved" id="resetEscalationsSaved"></span>
+                    <span class="hint" id="escalationsCount"></span>
+                </div>
+            </div>
+        </div>
         <div class="card" id="securityEventsCard">
             <div class="card-head"><h2>Journal des tentatives détectées</h2></div>
             <div class="pad" id="securityEventsBody">

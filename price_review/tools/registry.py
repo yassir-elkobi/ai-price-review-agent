@@ -31,6 +31,12 @@ def get_escalations_snapshot() -> list[dict]:
         return list(ESCALATIONS)
 
 
+def reset_escalations() -> None:
+    """Clear the human-review queue (used by the demo reset button and tests)."""
+    with _escalations_lock:
+        ESCALATIONS.clear()
+
+
 @tool
 def get_price_data(instrument_id: str) -> str:
     """Fetch end-of-day price data for ONE instrument before applying desk rules.

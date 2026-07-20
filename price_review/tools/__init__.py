@@ -8,6 +8,7 @@ from price_review.tools.registry import (
     get_price_data,
     get_sector_context,
     get_validation_rules,
+    reset_escalations,
 )
 
 __all__ = [
@@ -20,4 +21,5 @@ __all__ = [
     "get_price_data",
     "get_sector_context",
     "get_validation_rules",
+    "reset_escalations",
 ]

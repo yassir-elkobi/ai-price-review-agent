@@ -136,6 +136,11 @@ class TestEscalateToHuman:
         snapshot = tools.get_escalations_snapshot()
         assert snapshot[0]["instrument_id"] == "AAPL.OQ"
 
+    def test_reset_clears_the_queue(self):
+        tools.escalate_to_human.invoke({"instrument_id": "AAPL.OQ", "reason": "Ambiguous"})
+        tools.reset_escalations()
+        assert tools.get_escalations_snapshot() == []
+
 
 class TestGetDecisionHistory:
     """Decision-history tool: no precedent vs. a recorded prior decision."""

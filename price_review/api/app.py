@@ -31,7 +31,7 @@ from price_review.security import (
     is_security_enabled,
     set_security_enabled,
 )
-from price_review.tools import get_escalations_snapshot
+from price_review.tools import get_escalations_snapshot, reset_escalations
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -242,6 +242,13 @@ def validate_book(req: BookRequest):
 @app.get("/escalations")
 def get_escalations():
     return {"escalations": get_escalations_snapshot()}
+
+
+@app.post("/escalations/reset")
+def reset_escalations_endpoint():
+    reset_escalations()
+    logger.info("Escalation queue cleared.")
+    return {"status": "reset", "escalations": get_escalations_snapshot()}
 
 
 @app.get("/scenarios")

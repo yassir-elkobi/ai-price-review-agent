@@ -85,6 +85,8 @@ static/                     UI (4 tabs: Revue solo, Book, Évaluation, Sécurit�
 - `POST /memory/reset` wipes the Qdrant collection (button in the Sécurité
   tab) so a demo can rebuild history from a clean slate instead of showing
   whatever accumulated during testing.
+- `POST /escalations/reset` clears the `/escalations` human-review queue
+  (same tab), since it otherwise accumulates for the whole process lifetime.
 
 ## Multi-agent supervisor
 

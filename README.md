@@ -13,8 +13,8 @@ ReAct agent for **Let's Talk**, a two-part internal series on AI agents. Reviews
 end-of-day prices instrument-by-instrument against desk rules that can change
 at runtime.
 
-- **Session 1** (*Comprendre et concevoir un agent*): solo ReAct agent, stateless, one instrument at a time.
-- **Session 2** (*Du solo au système fiable*, this branch): the same agent grows memory, a multi-agent supervisor, an evaluation harness, and a prompt-injection guard.
+- **Session 1** (*Comprendre et Concevoir un Agent*): solo ReAct agent, stateless, one instrument at a time.
+- **Session 2** (*Du Solo au Système Fiable*, this branch): the same agent grows memory, a multi-agent supervisor, an evaluation harness, and a prompt-injection guard.
 
 ![CI](https://github.com/yassir-elkobi/ai-price-review-agent/actions/workflows/ci.yml/badge.svg)
 ![Version](https://img.shields.io/badge/version-2.0.0-blue)

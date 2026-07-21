@@ -1,4 +1,4 @@
-# Risk analysis (MAESTRO-style, layer by layer)
+# Risk Analysis (MAESTRO-style, layer by layer)
 
 This is a layer-by-layer risk analysis of the price review agent, in the spirit of the
 MAESTRO framework for agentic AI (Model, Application/Ecosystem, System, Threat, Runtime,
